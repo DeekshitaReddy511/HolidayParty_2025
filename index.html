@@ -2,57 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rate Your Train Ride</title>
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: linear-gradient(180deg, #9dd9ff 0%, #c9f1ff 40%, #f4f7fb 100%);
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px 8px;
             overflow-x: hidden;
             position: relative;
-            min-height: 100vh;
+            min-height: 350px; /* matches iframe height nicely */
+        }
+
+        .widget-root {
+            max-width: 460px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         h1 {
-            margin-bottom: 10px;
+            margin: 0 0 4px;
+            font-size: 22px;
+            text-align: center;
         }
 
         .subtitle {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #555;
             text-align: center;
+            font-size: 12px;
+            line-height: 1.4;
         }
 
         /* Background clouds */
         .sky-cloud {
             position: fixed;
             top: 8%;
-            width: 120px;
-            height: 60px;
+            width: 90px;
+            height: 45px;
             background: #ffffff;
             border-radius: 60px;
             box-shadow:
-                30px 10px 0 0 #ffffff,
-                60px 5px 0 0 #ffffff;
+                24px 8px 0 0 #ffffff,
+                48px 4px 0 0 #ffffff;
             opacity: 0.9;
             z-index: -1;
             animation: cloud-drift 40s linear infinite;
         }
 
         .sky-cloud.cloud2 {
-            top: 18%;
-            width: 150px;
+            top: 20%;
+            width: 110px;
             animation-duration: 55s;
             animation-delay: -10s;
             opacity: 0.8;
         }
 
         .sky-cloud.cloud3 {
-            top: 28%;
-            width: 90px;
+            top: 32%;
+            width: 80px;
             animation-duration: 35s;
             animation-delay: -20s;
             opacity: 0.7;
@@ -63,48 +75,48 @@
             100% { transform: translateX(120vw); }
         }
 
-        /* Ground */
+        /* Ground (shorter so it fits in 350px nicely) */
         .ground {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 120px;
+            height: 80px;
             background: linear-gradient(180deg, #76c26b 0%, #4e9e4a 100%);
             z-index: -1;
         }
 
         .bush {
             position: absolute;
-            bottom: 20px;
-            width: 60px;
-            height: 30px;
+            bottom: 18px;
+            width: 50px;
+            height: 24px;
             background: #3f8c3a;
             border-radius: 30px;
             box-shadow:
-                20px 0 0 0 #3f8c3a,
-                40px 0 0 0 #3f8c3a;
+                16px 0 0 0 #3f8c3a,
+                32px 0 0 0 #3f8c3a;
             opacity: 0.9;
         }
 
         .bush.b1 { left: 10%; }
-        .bush.b2 { left: 35%; bottom: 24px; }
-        .bush.b3 { left: 65%; }
-        .bush.b4 { left: 82%; bottom: 26px; }
+        .bush.b2 { left: 40%; bottom: 22px; }
+        .bush.b3 { left: 70%; }
+        .bush.b4 { left: 85%; bottom: 24px; }
 
         .train-wrapper {
-            margin: 30px 0;
+            margin: 6px 0 8px;
             position: relative;
-            padding: 20px 30px 32px;
-            border-radius: 24px;
+            padding: 14px 18px 22px;
+            border-radius: 20px;
             background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             animation: gentle-bob 3s ease-in-out infinite;
         }
 
         @keyframes gentle-bob {
             0%   { transform: translateY(0); }
-            50%  { transform: translateY(-3px); }
+            50%  { transform: translateY(-2px); }
             100% { transform: translateY(0); }
         }
 
@@ -124,8 +136,8 @@
             position: absolute;
             left: 0;
             right: 0;
-            bottom: 26px;
-            height: 10px;
+            bottom: 22px;
+            height: 8px;
             background: radial-gradient(ellipse at center,
                        rgba(0,0,0,0.15) 0,
                        rgba(0,0,0,0.0) 70%);
@@ -136,9 +148,9 @@
         .engine,
         .carriage {
             position: relative;
-            width: 70px;
-            height: 58px;
-            border-radius: 16px;
+            width: 60px;
+            height: 50px;
+            border-radius: 14px;
             border: 2px solid #3a3a3a;
             cursor: pointer;
             background: #f0c95c;
@@ -147,36 +159,36 @@
 
         .engine {
             background: #ff6b6b;
-            border-radius: 16px;
+            border-radius: 14px;
         }
 
         .engine-top {
             position: absolute;
-            top: -8px;
+            top: -6px;
             left: 6px;
-            right: 12px;
-            height: 8px;
-            border-radius: 8px 8px 4px 4px;
+            right: 10px;
+            height: 6px;
+            border-radius: 7px 7px 3px 3px;
             background: #333;
         }
 
         .engine-window {
             position: absolute;
-            top: 10px;
-            left: 14px;
-            width: 26px;
-            height: 22px;
-            border-radius: 6px;
+            top: 8px;
+            left: 12px;
+            width: 22px;
+            height: 18px;
+            border-radius: 5px;
             background: linear-gradient(180deg, #e5f4ff 0%, #c0e6ff 100%);
             border: 1px solid #2d4f6d;
         }
 
         .chimney {
             position: absolute;
-            top: -16px;
-            right: 10px;
-            width: 10px;
-            height: 22px;
+            top: -14px;
+            right: 8px;
+            width: 9px;
+            height: 20px;
             border-radius: 6px;
             background: #555;
         }
@@ -193,11 +205,11 @@
 
         .carriage-window {
             position: absolute;
-            top: 12px;
-            left: 13px;
-            right: 13px;
-            height: 22px;
-            border-radius: 6px;
+            top: 9px;
+            left: 11px;
+            right: 11px;
+            height: 18px;
+            border-radius: 5px;
             background: linear-gradient(180deg, #e5f4ff 0%, #c0e6ff 100%);
             border: 1px solid #2d4f6d;
         }
@@ -205,9 +217,9 @@
         .carriage::after {
             content: "";
             position: absolute;
-            right: -7px;
-            bottom: 8px;
-            width: 14px;
+            right: -6px;
+            bottom: 7px;
+            width: 12px;
             height: 4px;
             border-radius: 2px;
             background: #555;
@@ -218,15 +230,15 @@
 
         .wheel-row {
             position: absolute;
-            bottom: -10px;
-            left: 10px;
+            bottom: -8px;
+            left: 9px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .wheel {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: #222;
             border-radius: 50%;
             box-shadow: 0 1px 0 #000;
@@ -240,26 +252,26 @@
         }
 
         .carriage.selected {
-            transform: translateY(-6px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.22);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.22);
         }
 
         .carriage:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.18);
         }
 
         .engine:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.18);
         }
 
         .track {
-            width: 420px;
-            height: 7px;
+            width: 380px;
+            height: 6px;
             background: #555;
             border-radius: 4px;
-            margin-top: 27px;
+            margin-top: 20px;
             position: relative;
         }
 
@@ -283,8 +295,8 @@
         /* Smoke */
         .smoke-stack {
             position: absolute;
-            top: -24px;
-            right: 13px;
+            top: -22px;
+            right: 11px;
             width: 0;
             height: 0;
         }
@@ -313,25 +325,25 @@
         }
 
         .smoke-cloud.one {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             top: -6px;
             left: -4px;
             animation-delay: 0s;
         }
 
         .smoke-cloud.two {
-            width: 20px;
-            height: 20px;
-            top: -20px;
+            width: 18px;
+            height: 18px;
+            top: -18px;
             left: -8px;
             animation-delay: 0.3s;
         }
 
         .smoke-cloud.three {
-            width: 24px;
-            height: 24px;
-            top: -35px;
+            width: 22px;
+            height: 22px;
+            top: -32px;
             left: -12px;
             animation-delay: 0.6s;
         }
@@ -343,33 +355,35 @@
         .rating-5 .smoke-cloud { transform: scale(1.4); }
 
         .rating-text {
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 4px;
+            font-size: 12px;
+            text-align: center;
         }
 
         .controls {
-            margin-top: 20px;
+            margin-top: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         button {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 999px;
             border: none;
             cursor: pointer;
             font-weight: bold;
+            font-size: 12px;
             background: linear-gradient(135deg, #007bff, #00b4ff);
             color: #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         button:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
         }
 
         button:disabled {
@@ -379,8 +393,8 @@
         }
 
         .debug-note {
-            margin-top: 20px;
-            font-size: 12px;
+            margin-top: 4px;
+            font-size: 10px;
             color: #777;
             text-align: center;
         }
@@ -388,10 +402,10 @@
         /* Hover tooltip */
         #hover-tooltip {
             position: fixed;
-            padding: 8px 10px;
+            padding: 6px 8px;
             background: #222;
             color: #fff;
-            font-size: 12px;
+            font-size: 11px;
             border-radius: 8px;
             pointer-events: none;
             opacity: 0;
@@ -422,85 +436,87 @@
         <div class="bush b4"></div>
     </div>
 
-    <h1>Rate Your Train Ride</h1>
-    <div class="subtitle">
-        Move your mouse over the train and click a carriage (1–5).<br />
-        The sky is calm. The train is not.
-    </div>
+    <div class="widget-root">
+        <h1>Rate Your Train Ride</h1>
+        <div class="subtitle">
+            Move your mouse over the train and click a carriage (1–5).<br />
+            The sky is calm. The train is not.
+        </div>
 
-    <div class="train-wrapper">
-        <div class="train-track-container">
-            <div class="train-shadow"></div>
+        <div class="train-wrapper">
+            <div class="train-track-container">
+                <div class="train-shadow"></div>
 
-            <div id="train" class="train rating-0">
-                <!-- Engine -->
-                <div class="engine">
-                    <div class="engine-top"></div>
-                    <div class="engine-window"></div>
-                    <div class="chimney"></div>
-                    <div class="smoke-stack">
-                        <div class="smoke-cloud one"></div>
-                        <div class="smoke-cloud two"></div>
-                        <div class="smoke-cloud three"></div>
+                <div id="train" class="train rating-0">
+                    <!-- Engine -->
+                    <div class="engine">
+                        <div class="engine-top"></div>
+                        <div class="engine-window"></div>
+                        <div class="chimney"></div>
+                        <div class="smoke-stack">
+                            <div class="smoke-cloud one"></div>
+                            <div class="smoke-cloud two"></div>
+                            <div class="smoke-cloud three"></div>
+                        </div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
                     </div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
+
+                    <!-- 5 clickable carriages = ratings 1–5 -->
+                    <div class="carriage" data-rating="1">
+                        <div class="carriage-window"></div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
+                    </div>
+                    <div class="carriage" data-rating="2">
+                        <div class="carriage-window"></div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
+                    </div>
+                    <div class="carriage" data-rating="3">
+                        <div class="carriage-window"></div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
+                    </div>
+                    <div class="carriage" data-rating="4">
+                        <div class="carriage-window"></div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
+                    </div>
+                    <div class="carriage" data-rating="5">
+                        <div class="carriage-window"></div>
+                        <div class="wheel-row">
+                            <div class="wheel"></div>
+                            <div class="wheel"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 5 clickable carriages = ratings 1–5 -->
-                <div class="carriage" data-rating="1">
-                    <div class="carriage-window"></div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
-                </div>
-                <div class="carriage" data-rating="2">
-                    <div class="carriage-window"></div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
-                </div>
-                <div class="carriage" data-rating="3">
-                    <div class="carriage-window"></div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
-                </div>
-                <div class="carriage" data-rating="4">
-                    <div class="carriage-window"></div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
-                </div>
-                <div class="carriage" data-rating="5">
-                    <div class="carriage-window"></div>
-                    <div class="wheel-row">
-                        <div class="wheel"></div>
-                        <div class="wheel"></div>
-                    </div>
-                </div>
+                <div class="track"></div>
             </div>
-
-            <div class="track"></div>
         </div>
-    </div>
 
-    <div class="controls">
-        <div class="rating-text">
-            Selected rating:
-            <strong id="selected-rating">None</strong> (out of 5)
+        <div class="controls">
+            <div class="rating-text">
+                Selected rating:
+                <strong id="selected-rating">None</strong> (out of 5)
+            </div>
+            <button id="submit-btn" disabled>Submit Rating</button>
         </div>
-        <button id="submit-btn" disabled>Submit Rating</button>
-    </div>
 
-    <div class="debug-note">
-        Warning: side effects may include guilt, laughter, and sudden empathy for trains.
+        <div class="debug-note">
+            Warning: side effects may include guilt, laughter, and sudden empathy for trains.
+        </div>
     </div>
 
     <div id="hover-tooltip"></div>
@@ -548,11 +564,11 @@
 
         function moveTrainToRating(rating) {
             const ratingOffsets = {
-                1: -60,
-                2: -30,
+                1: -50,
+                2: -25,
                 3: 0,
-                4: 30,
-                5: 60
+                4: 25,
+                5: 50
             };
             const x = ratingOffsets[rating] || 0;
             currentOffsetX = x;
@@ -560,7 +576,7 @@
         }
 
         function moveTrainDodge() {
-            const possibleOffsets = [-140, -90, -40, 20, 70, 120];
+            const possibleOffsets = [-110, -70, -30, 20, 60, 100];
             let bestOffset = possibleOffsets[0];
             let bestDist = Math.abs(bestOffset - currentOffsetX);
 
@@ -574,7 +590,7 @@
 
             currentOffsetX = bestOffset;
             const angle = (Math.random() * 14 - 7);
-            const y = (Math.random() * 12 - 6);
+            const y = (Math.random() * 10 - 5);
 
             trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
         }
@@ -641,4 +657,5 @@
     </script>
 </body>
 </html>
+
 
