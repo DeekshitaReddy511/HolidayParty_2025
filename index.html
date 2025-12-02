@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Rate Your Train Ride</title>
     <style>
         body {
@@ -132,8 +132,7 @@
             pointer-events: none;
         }
 
-        /* ---------- NEW SIMPLE TRAIN LOOK ---------- */
-
+        /* Simple train look */
         .engine,
         .carriage {
             position: relative;
@@ -146,7 +145,6 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        /* Engine: solid red block with one window + chimney */
         .engine {
             background: #ff6b6b;
             border-radius: 16px;
@@ -183,7 +181,6 @@
             background: #555;
         }
 
-        /* Carriages – different colors per rating */
         .carriage {
             background: #ffb347;
         }
@@ -205,7 +202,6 @@
             border: 1px solid #2d4f6d;
         }
 
-        /* Simple connector line under each carriage except last */
         .carriage::after {
             content: "";
             position: absolute;
@@ -288,7 +284,7 @@
         .smoke-stack {
             position: absolute;
             top: -24px;
-            right: 13px; /* sits inside chimney */
+            right: 13px;
             width: 0;
             height: 0;
         }
@@ -428,7 +424,7 @@
 
     <h1>Rate Your Train Ride</h1>
     <div class="subtitle">
-        Move your mouse over the train and click a carriage (1–5).<br>
+        Move your mouse over the train and click a carriage (1–5).<br />
         The sky is calm. The train is not.
     </div>
 
@@ -453,16 +449,42 @@
                     </div>
                 </div>
 
-                <!-- 5 clickable carriages = 1–5 rating -->
-                {% for i in range(1, 6) %}
-                <div class="carriage" data-rating="{{ i }}">
+                <!-- 5 clickable carriages = ratings 1–5 -->
+                <div class="carriage" data-rating="1">
                     <div class="carriage-window"></div>
                     <div class="wheel-row">
                         <div class="wheel"></div>
                         <div class="wheel"></div>
                     </div>
                 </div>
-                {% endfor %}
+                <div class="carriage" data-rating="2">
+                    <div class="carriage-window"></div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
+                <div class="carriage" data-rating="3">
+                    <div class="carriage-window"></div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
+                <div class="carriage" data-rating="4">
+                    <div class="carriage-window"></div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
+                <div class="carriage" data-rating="5">
+                    <div class="carriage-window"></div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="track"></div>
@@ -484,170 +506,139 @@
     <div id="hover-tooltip"></div>
 
     <script>
-      const trainEl = document.getElementById("train");
-    const carriages = document.querySelectorAll(".carriage");
-    const selectedRatingEl = document.getElementById("selected-rating");
-    const submitBtn = document.getElementById("submit-btn");
-    const hoverTooltip = document.getElementById("hover-tooltip");
+        const trainEl = document.getElementById("train");
+        const carriages = document.querySelectorAll(".carriage");
+        const selectedRatingEl = document.getElementById("selected-rating");
+        const submitBtn = document.getElementById("submit-btn");
+        const hoverTooltip = document.getElementById("hover-tooltip");
 
-    let selectedRating = null;
+        let selectedRating = null;
+        let teaseClickCount = 0;  // number of dodges since last accepted rating
+        let currentOffsetX = 0;   // current X position of train
 
-    // Number of click attempts since last successful rating
-    let teaseClickCount = 0;
-
-    // Current X offset of the train so we can "run away from its position"
-    let currentOffsetX = 0;
-
-    const commentsByRating = {
-        1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
-        2: "A 2 star review means we are performing 40% below goal. Our metrics team is spiraling. Is your personal satisfaction worth destroying the morale of an entire department? Rethink this immediately.",
-        3: "Ah, a 3. The mark of utter indifference. We will log this as 'Not Bad Enough to Fix.' Are you sure you don't have enough energy for just one more star? It requires minimal effort.",
-        4: "FOUR stars is only 96% satisfaction! That small gap suggests a lack of alignment with our core brand values. Please detail the exact coordinates of the missing star before we can accept this submission.",
-        5: "Perfect! Thank you. Now, to validate this 5-star rating, please complete a brief survey detailing 10 ways we can maintain this level of perfection forever. (This is mandatory, not optional.)"
-    };
-
-    const hoverCommentsByRating = {
-        1: "1 star? The train just stalled emotionally.",
-        2: "2 stars: minor derailment of happiness.",
-        3: "3 stars: meh. The train shrugs.",
-        4: "4 stars: so close the conductor can taste it.",
-        5: "5 stars: the train is adding you to its will."
-    };
-
-    function updateSelection(rating) {
-        selectedRating = rating;
-        selectedRatingEl.textContent = rating;
-        submitBtn.disabled = false;
-
-        carriages.forEach(c => {
-            const value = parseInt(c.getAttribute("data-rating"));
-            if (value === rating) {
-                c.classList.add("selected");
-            } else {
-                c.classList.remove("selected");
-            }
-        });
-
-        trainEl.className = "train rating-" + rating;
-    }
-
-    // Train position when it ACCEPTS the rating (nice, calm)
-    function moveTrainToRating(rating) {
-        // Map rating 1–5 -> fixed positions along the track
-        const ratingOffsets = {
-            1: -60,
-            2: -30,
-            3: 0,
-            4: 30,
-            5: 60
+        const commentsByRating = {
+            1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
+            2: "A 2 star review means we are performing 40% below goal. Our metrics team is spiraling. Is your personal satisfaction worth destroying the morale of an entire department? Rethink this immediately.",
+            3: "Ah, a 3. The mark of utter indifference. We will log this as 'Not Bad Enough to Fix.' Are you sure you don't have enough energy for just one more star? It requires minimal effort.",
+            4: "FOUR stars is only 96% satisfaction! That small gap suggests a lack of alignment with our core brand values. Please detail the exact coordinates of the missing star before we can accept this submission.",
+            5: "Perfect! Thank you. Now, to validate this 5-star rating, please complete a brief survey detailing 10 ways we can maintain this level of perfection forever. (This is mandatory, not optional.)"
         };
-        const x = ratingOffsets[rating] || 0;
-        currentOffsetX = x;
-        trainEl.style.transform = `translate(${x}px, 0px) rotate(0deg)`;
-    }
 
-    // Train position when it RUNS AWAY from its current spot
-    function moveTrainDodge() {
-        // Predefined big offsets: train jumps between these
-        const possibleOffsets = [-120, -70, -20, 40, 90, 140];
+        const hoverCommentsByRating = {
+            1: "1 star? The train just stalled emotionally.",
+            2: "2 stars: minor derailment of happiness.",
+            3: "3 stars: meh. The train shrugs.",
+            4: "4 stars: so close the conductor can taste it.",
+            5: "5 stars: the train is adding you to its will."
+        };
 
-        // Pick the offset farthest away from currentOffsetX, so it really runs away
-        let bestOffset = possibleOffsets[0];
-        let bestDist = Math.abs(bestOffset - currentOffsetX);
+        function updateSelection(rating) {
+            selectedRating = rating;
+            selectedRatingEl.textContent = rating;
+            submitBtn.disabled = false;
 
-        possibleOffsets.forEach(off => {
-            const dist = Math.abs(off - currentOffsetX);
-            if (dist > bestDist + 10) { // +10 so it prefers clearly farther ones
-                bestDist = dist;
-                bestOffset = off;
-            }
-        });
-
-        currentOffsetX = bestOffset;
-        const angle = (Math.random() * 14 - 7); // little tilt -7..7 deg
-        const y = (Math.random() * 12 - 6);     // small up/down jiggle
-
-        trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
-    }
-
-    carriages.forEach(c => {
-        c.addEventListener("click", () => {
-            const rating = parseInt(c.getAttribute("data-rating"));
-
-            // First 3 clicks: ALWAYS dodge, user must chase train
-            if (teaseClickCount < 3) {
-                teaseClickCount += 1;
-
-                moveTrainDodge();
-
-                hoverTooltip.textContent = `Attempt ${teaseClickCount}/3: The train has fled. Chase it!`;
-                hoverTooltip.classList.add("visible");
-
-                const rect = trainEl.getBoundingClientRect();
-                hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
-                hoverTooltip.style.top = rect.top - 20 + "px";
-
-                setTimeout(() => hoverTooltip.classList.remove("visible"), 900);
-                return; // click blocked, rating NOT taken
-            }
-
-            // 4th click: finally accept rating
-            teaseClickCount = 0; // reset for next time
-            updateSelection(rating);
-            moveTrainToRating(rating);
-        });
-
-        // Hover: just show small comment, no big dodges here
-        c.addEventListener("mouseenter", (e) => {
-            const rating = parseInt(c.getAttribute("data-rating"));
-            hoverTooltip.textContent = hoverCommentsByRating[rating];
-            hoverTooltip.classList.add("visible");
-            hoverTooltip.style.left = (e.clientX + 12) + "px";
-            hoverTooltip.style.top = (e.clientY - 12) + "px";
-        });
-
-        c.addEventListener("mousemove", (e) => {
-            hoverTooltip.style.left = (e.clientX + 12) + "px";
-            hoverTooltip.style.top = (e.clientY - 12) + "px";
-        });
-
-        c.addEventListener("mouseleave", () => {
-            hoverTooltip.classList.remove("visible");
-        });
-    });
-
-    submitBtn.addEventListener("click", async () => {
-        if (!selectedRating) {
-            alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
-            return;
-        }
-
-        const message = commentsByRating[selectedRating];
-
-        const confirmed = confirm(
-            message + "\n\nClick OK to lock in this rating, or Cancel to reconsider your life choices."
-        );
-
-        if (!confirmed) return;
-
-        try {
-            const response = await fetch("/rate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ rating: selectedRating })
+            carriages.forEach(c => {
+                const value = parseInt(c.getAttribute("data-rating"), 10);
+                if (value === rating) c.classList.add("selected");
+                else c.classList.remove("selected");
             });
 
-            const data = await response.json();
-            if (data.success) {
-                alert("Thanks! You successfully gave a " + data.rating + "-star ride. The train will never forgive you.");
-            } else {
-                alert("Something went wrong saving your rating. The train is offended.");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Network error. The train control center lost your feedback in a tunnel.");
+            trainEl.className = "train rating-" + rating;
         }
-    });    
+
+        function moveTrainToRating(rating) {
+            const ratingOffsets = {
+                1: -60,
+                2: -30,
+                3: 0,
+                4: 30,
+                5: 60
+            };
+            const x = ratingOffsets[rating] || 0;
+            currentOffsetX = x;
+            trainEl.style.transform = `translate(${x}px, 0px) rotate(0deg)`;
+        }
+
+        function moveTrainDodge() {
+            const possibleOffsets = [-140, -90, -40, 20, 70, 120];
+            let bestOffset = possibleOffsets[0];
+            let bestDist = Math.abs(bestOffset - currentOffsetX);
+
+            possibleOffsets.forEach(off => {
+                const dist = Math.abs(off - currentOffsetX);
+                if (dist > bestDist + 10) {
+                    bestDist = dist;
+                    bestOffset = off;
+                }
+            });
+
+            currentOffsetX = bestOffset;
+            const angle = (Math.random() * 14 - 7);
+            const y = (Math.random() * 12 - 6);
+
+            trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
+        }
+
+        carriages.forEach(c => {
+            c.addEventListener("click", () => {
+                const rating = parseInt(c.getAttribute("data-rating"), 10);
+
+                if (teaseClickCount < 3) {
+                    teaseClickCount += 1;
+                    moveTrainDodge();
+
+                    hoverTooltip.textContent = `Attempt ${teaseClickCount}/3: The train has fled. Chase it!`;
+                    hoverTooltip.classList.add("visible");
+
+                    const rect = trainEl.getBoundingClientRect();
+                    hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
+                    hoverTooltip.style.top = rect.top - 20 + "px";
+
+                    setTimeout(() => hoverTooltip.classList.remove("visible"), 900);
+                    return;
+                }
+
+                // 4th click: accept rating
+                teaseClickCount = 0;
+                updateSelection(rating);
+                moveTrainToRating(rating);
+            });
+
+            c.addEventListener("mouseenter", (e) => {
+                const rating = parseInt(c.getAttribute("data-rating"), 10);
+                hoverTooltip.textContent = hoverCommentsByRating[rating];
+                hoverTooltip.classList.add("visible");
+                hoverTooltip.style.left = (e.clientX + 12) + "px";
+                hoverTooltip.style.top = (e.clientY - 12) + "px";
+            });
+
+            c.addEventListener("mousemove", (e) => {
+                hoverTooltip.style.left = (e.clientX + 12) + "px";
+                hoverTooltip.style.top = (e.clientY - 12) + "px";
+            });
+
+            c.addEventListener("mouseleave", () => {
+                hoverTooltip.classList.remove("visible");
+            });
+        });
+
+        submitBtn.addEventListener("click", () => {
+            if (!selectedRating) {
+                alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
+                return;
+            }
+
+            const message = commentsByRating[selectedRating];
+            const confirmed = confirm(
+                message + "\n\nClick OK to lock in this rating, or Cancel to reconsider your life choices."
+            );
+
+            if (!confirmed) return;
+
+            alert("Thanks! You successfully gave a " + selectedRating +
+                "-star ride. The train will never forgive you.");
+        });
     </script>
 </body>
 </html>
+
