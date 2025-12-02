@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rate Your Train Ride</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #9dd9ff 0%, #c9f1ff 40%, #f4f7fb 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            margin-bottom: 20px;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Background clouds */
+        .sky-cloud {
+            position: fixed;
+            top: 8%;
+            width: 120px;
+            height: 60px;
+            background: #ffffff;
+            border-radius: 60px;
+            box-shadow:
+                30px 10px 0 0 #ffffff,
+                60px 5px 0 0 #ffffff;
+            opacity: 0.9;
+            z-index: -1;
+            animation: cloud-drift 40s linear infinite;
+        }
+
+        .sky-cloud.cloud2 {
+            top: 18%;
+            width: 150px;
+            animation-duration: 55s;
+            animation-delay: -10s;
+            opacity: 0.8;
+        }
+
+        .sky-cloud.cloud3 {
+            top: 28%;
+            width: 90px;
+            animation-duration: 35s;
+            animation-delay: -20s;
+            opacity: 0.7;
+        }
+
+        @keyframes cloud-drift {
+            0%   { transform: translateX(-20vw); }
+            100% { transform: translateX(120vw); }
+        }
+
+        /* Ground */
+        .ground {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(180deg, #76c26b 0%, #4e9e4a 100%);
+            z-index: -1;
+        }
+
+        .bush {
+            position: absolute;
+            bottom: 20px;
+            width: 60px;
+            height: 30px;
+            background: #3f8c3a;
+            border-radius: 30px;
+            box-shadow:
+                20px 0 0 0 #3f8c3a,
+                40px 0 0 0 #3f8c3a;
+            opacity: 0.9;
+        }
+
+        .bush.b1 { left: 10%; }
+        .bush.b2 { left: 35%; bottom: 24px; }
+        .bush.b3 { left: 65%; }
+        .bush.b4 { left: 82%; bottom: 26px; }
+
+        .train-wrapper {
+            margin: 30px 0;
+            position: relative;
+            padding: 20px 30px 32px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            animation: gentle-bob 3s ease-in-out infinite;
+        }
+
+        @keyframes gentle-bob {
+            0%   { transform: translateY(0); }
+            50%  { transform: translateY(-3px); }
+            100% { transform: translateY(0); }
+        }
+
+        .train-track-container {
+            position: relative;
+        }
+
+        .train {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .train-shadow {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 26px;
+            height: 10px;
+            background: radial-gradient(ellipse at center,
+                       rgba(0,0,0,0.15) 0,
+                       rgba(0,0,0,0.0) 70%);
+            pointer-events: none;
+        }
+
+        /* ---------- NEW SIMPLE TRAIN LOOK ---------- */
+
+        .engine,
+        .carriage {
+            position: relative;
+            width: 70px;
+            height: 58px;
+            border-radius: 16px;
+            border: 2px solid #3a3a3a;
+            cursor: pointer;
+            background: #f0c95c;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        /* Engine: solid red block with one window + chimney */
+        .engine {
+            background: #ff6b6b;
+            border-radius: 16px;
+        }
+
+        .engine-top {
+            position: absolute;
+            top: -8px;
+            left: 6px;
+            right: 12px;
+            height: 8px;
+            border-radius: 8px 8px 4px 4px;
+            background: #333;
+        }
+
+        .engine-window {
+            position: absolute;
+            top: 10px;
+            left: 14px;
+            width: 26px;
+            height: 22px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #e5f4ff 0%, #c0e6ff 100%);
+            border: 1px solid #2d4f6d;
+        }
+
+        .chimney {
+            position: absolute;
+            top: -16px;
+            right: 10px;
+            width: 10px;
+            height: 22px;
+            border-radius: 6px;
+            background: #555;
+        }
+
+        /* Carriages – different colors per rating */
+        .carriage {
+            background: #ffb347;
+        }
+
+        .carriage[data-rating="1"] { background: #ff6b6b; }
+        .carriage[data-rating="2"] { background: #ff9f6b; }
+        .carriage[data-rating="3"] { background: #ffc857; }
+        .carriage[data-rating="4"] { background: #f7e06b; }
+        .carriage[data-rating="5"] { background: #8fd37a; }
+
+        .carriage-window {
+            position: absolute;
+            top: 12px;
+            left: 13px;
+            right: 13px;
+            height: 22px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #e5f4ff 0%, #c0e6ff 100%);
+            border: 1px solid #2d4f6d;
+        }
+
+        /* Simple connector line under each carriage except last */
+        .carriage::after {
+            content: "";
+            position: absolute;
+            right: -7px;
+            bottom: 8px;
+            width: 14px;
+            height: 4px;
+            border-radius: 2px;
+            background: #555;
+        }
+        .carriage:last-child::after {
+            display: none;
+        }
+
+        .wheel-row {
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .wheel {
+            width: 16px;
+            height: 16px;
+            background: #222;
+            border-radius: 50%;
+            box-shadow: 0 1px 0 #000;
+            animation: wheel-spin 0.9s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes wheel-spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .carriage.selected {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.22);
+        }
+
+        .carriage:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .engine:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .track {
+            width: 420px;
+            height: 7px;
+            background: #555;
+            border-radius: 4px;
+            margin-top: 27px;
+            position: relative;
+        }
+
+        .track::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                #333 0,
+                #333 16px,
+                #999 16px,
+                #999 28px
+            );
+            opacity: 0.6;
+        }
+
+        /* Smoke */
+        .smoke-stack {
+            position: absolute;
+            top: -24px;
+            right: 13px; /* sits inside chimney */
+            width: 0;
+            height: 0;
+        }
+
+        .smoke-cloud {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(120, 120, 120, 0.7);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            animation: smoke-puff 2s ease-in-out infinite;
+        }
+
+        @keyframes smoke-puff {
+            0% {
+                transform: translateY(0) scale(0.9);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-10px) scale(1.05);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-18px) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        .smoke-cloud.one {
+            width: 16px;
+            height: 16px;
+            top: -6px;
+            left: -4px;
+            animation-delay: 0s;
+        }
+
+        .smoke-cloud.two {
+            width: 20px;
+            height: 20px;
+            top: -20px;
+            left: -8px;
+            animation-delay: 0.3s;
+        }
+
+        .smoke-cloud.three {
+            width: 24px;
+            height: 24px;
+            top: -35px;
+            left: -12px;
+            animation-delay: 0.6s;
+        }
+
+        .rating-1 .smoke-cloud { transform: scale(0.6); }
+        .rating-2 .smoke-cloud { transform: scale(0.85); }
+        .rating-3 .smoke-cloud { transform: scale(1); }
+        .rating-4 .smoke-cloud { transform: scale(1.2); }
+        .rating-5 .smoke-cloud { transform: scale(1.4); }
+
+        .rating-text {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            background: linear-gradient(135deg, #007bff, #00b4ff);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .debug-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+
+        /* Hover tooltip */
+        #hover-tooltip {
+            position: fixed;
+            padding: 8px 10px;
+            background: #222;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.1s ease, transform 0.1s ease;
+            max-width: 220px;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #hover-tooltip.visible {
+            opacity: 1;
+            transform: translateY(-8px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background clouds -->
+    <div class="sky-cloud" style="left:-15%;"></div>
+    <div class="sky-cloud cloud2" style="left:-30%;"></div>
+    <div class="sky-cloud cloud3" style="left:-25%;"></div>
+
+    <!-- Ground + bushes -->
+    <div class="ground">
+        <div class="bush b1"></div>
+        <div class="bush b2"></div>
+        <div class="bush b3"></div>
+        <div class="bush b4"></div>
+    </div>
+
+    <h1>Rate Your Train Ride</h1>
+    <div class="subtitle">
+        Move your mouse over the train and click a carriage (1–5).<br>
+        The sky is calm. The train is not.
+    </div>
+
+    <div class="train-wrapper">
+        <div class="train-track-container">
+            <div class="train-shadow"></div>
+
+            <div id="train" class="train rating-0">
+                <!-- Engine -->
+                <div class="engine">
+                    <div class="engine-top"></div>
+                    <div class="engine-window"></div>
+                    <div class="chimney"></div>
+                    <div class="smoke-stack">
+                        <div class="smoke-cloud one"></div>
+                        <div class="smoke-cloud two"></div>
+                        <div class="smoke-cloud three"></div>
+                    </div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
+
+                <!-- 5 clickable carriages = 1–5 rating -->
+                {% for i in range(1, 6) %}
+                <div class="carriage" data-rating="{{ i }}">
+                    <div class="carriage-window"></div>
+                    <div class="wheel-row">
+                        <div class="wheel"></div>
+                        <div class="wheel"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="track"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="rating-text">
+            Selected rating:
+            <strong id="selected-rating">None</strong> (out of 5)
+        </div>
+        <button id="submit-btn" disabled>Submit Rating</button>
+    </div>
+
+    <div class="debug-note">
+        Warning: side effects may include guilt, laughter, and sudden empathy for trains.
+    </div>
+
+    <div id="hover-tooltip"></div>
+
+    <script>
+      const trainEl = document.getElementById("train");
+    const carriages = document.querySelectorAll(".carriage");
+    const selectedRatingEl = document.getElementById("selected-rating");
+    const submitBtn = document.getElementById("submit-btn");
+    const hoverTooltip = document.getElementById("hover-tooltip");
+
+    let selectedRating = null;
+
+    // Number of click attempts since last successful rating
+    let teaseClickCount = 0;
+
+    // Current X offset of the train so we can "run away from its position"
+    let currentOffsetX = 0;
+
+    const commentsByRating = {
+        1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
+        2: "A 2 star review means we are performing 40% below goal. Our metrics team is spiraling. Is your personal satisfaction worth destroying the morale of an entire department? Rethink this immediately.",
+        3: "Ah, a 3. The mark of utter indifference. We will log this as 'Not Bad Enough to Fix.' Are you sure you don't have enough energy for just one more star? It requires minimal effort.",
+        4: "FOUR stars is only 96% satisfaction! That small gap suggests a lack of alignment with our core brand values. Please detail the exact coordinates of the missing star before we can accept this submission.",
+        5: "Perfect! Thank you. Now, to validate this 5-star rating, please complete a brief survey detailing 10 ways we can maintain this level of perfection forever. (This is mandatory, not optional.)"
+    };
+
+    const hoverCommentsByRating = {
+        1: "1 star? The train just stalled emotionally.",
+        2: "2 stars: minor derailment of happiness.",
+        3: "3 stars: meh. The train shrugs.",
+        4: "4 stars: so close the conductor can taste it.",
+        5: "5 stars: the train is adding you to its will."
+    };
+
+    function updateSelection(rating) {
+        selectedRating = rating;
+        selectedRatingEl.textContent = rating;
+        submitBtn.disabled = false;
+
+        carriages.forEach(c => {
+            const value = parseInt(c.getAttribute("data-rating"));
+            if (value === rating) {
+                c.classList.add("selected");
+            } else {
+                c.classList.remove("selected");
+            }
+        });
+
+        trainEl.className = "train rating-" + rating;
+    }
+
+    // Train position when it ACCEPTS the rating (nice, calm)
+    function moveTrainToRating(rating) {
+        // Map rating 1–5 -> fixed positions along the track
+        const ratingOffsets = {
+            1: -60,
+            2: -30,
+            3: 0,
+            4: 30,
+            5: 60
+        };
+        const x = ratingOffsets[rating] || 0;
+        currentOffsetX = x;
+        trainEl.style.transform = `translate(${x}px, 0px) rotate(0deg)`;
+    }
+
+    // Train position when it RUNS AWAY from its current spot
+    function moveTrainDodge() {
+        // Predefined big offsets: train jumps between these
+        const possibleOffsets = [-120, -70, -20, 40, 90, 140];
+
+        // Pick the offset farthest away from currentOffsetX, so it really runs away
+        let bestOffset = possibleOffsets[0];
+        let bestDist = Math.abs(bestOffset - currentOffsetX);
+
+        possibleOffsets.forEach(off => {
+            const dist = Math.abs(off - currentOffsetX);
+            if (dist > bestDist + 10) { // +10 so it prefers clearly farther ones
+                bestDist = dist;
+                bestOffset = off;
+            }
+        });
+
+        currentOffsetX = bestOffset;
+        const angle = (Math.random() * 14 - 7); // little tilt -7..7 deg
+        const y = (Math.random() * 12 - 6);     // small up/down jiggle
+
+        trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
+    }
+
+    carriages.forEach(c => {
+        c.addEventListener("click", () => {
+            const rating = parseInt(c.getAttribute("data-rating"));
+
+            // First 3 clicks: ALWAYS dodge, user must chase train
+            if (teaseClickCount < 3) {
+                teaseClickCount += 1;
+
+                moveTrainDodge();
+
+                hoverTooltip.textContent = `Attempt ${teaseClickCount}/3: The train has fled. Chase it!`;
+                hoverTooltip.classList.add("visible");
+
+                const rect = trainEl.getBoundingClientRect();
+                hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
+                hoverTooltip.style.top = rect.top - 20 + "px";
+
+                setTimeout(() => hoverTooltip.classList.remove("visible"), 900);
+                return; // click blocked, rating NOT taken
+            }
+
+            // 4th click: finally accept rating
+            teaseClickCount = 0; // reset for next time
+            updateSelection(rating);
+            moveTrainToRating(rating);
+        });
+
+        // Hover: just show small comment, no big dodges here
+        c.addEventListener("mouseenter", (e) => {
+            const rating = parseInt(c.getAttribute("data-rating"));
+            hoverTooltip.textContent = hoverCommentsByRating[rating];
+            hoverTooltip.classList.add("visible");
+            hoverTooltip.style.left = (e.clientX + 12) + "px";
+            hoverTooltip.style.top = (e.clientY - 12) + "px";
+        });
+
+        c.addEventListener("mousemove", (e) => {
+            hoverTooltip.style.left = (e.clientX + 12) + "px";
+            hoverTooltip.style.top = (e.clientY - 12) + "px";
+        });
+
+        c.addEventListener("mouseleave", () => {
+            hoverTooltip.classList.remove("visible");
+        });
+    });
+
+    submitBtn.addEventListener("click", async () => {
+        if (!selectedRating) {
+            alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
+            return;
+        }
+
+        const message = commentsByRating[selectedRating];
+
+        const confirmed = confirm(
+            message + "\n\nClick OK to lock in this rating, or Cancel to reconsider your life choices."
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch("/rate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rating: selectedRating })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("Thanks! You successfully gave a " + data.rating + "-star ride. The train will never forgive you.");
+            } else {
+                alert("Something went wrong saving your rating. The train is offended.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network error. The train control center lost your feedback in a tunnel.");
+        }
+    });    
+    </script>
+</body>
+</html>
