@@ -15,7 +15,7 @@
             padding: 10px 8px;
             overflow-x: hidden;
             position: relative;
-            min-height: 350px; /* matches iframe height nicely */
+            min-height: 350px; /* fits iframe */
         }
 
         .widget-root {
@@ -75,7 +75,120 @@
             100% { transform: translateX(120vw); }
         }
 
-        /* Ground (shorter so it fits in 350px nicely) */
+        /* Santa + sleigh */
+        .santa {
+            position: fixed;
+            top: 16%;
+            right: -25%;
+            width: 120px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 0;
+            animation: santa-fly 18s linear infinite;
+        }
+
+        @keyframes santa-fly {
+            0%   { transform: translateX(0);   opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateX(-80vw); opacity: 0; }
+        }
+
+        .santa-sleigh {
+            position: absolute;
+            right: 0;
+            bottom: 6px;
+            width: 40px;
+            height: 14px;
+            border-radius: 0 0 10px 10px;
+            background: #b22222;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
+        }
+
+        .santa-sleigh::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 4px;
+            right: 4px;
+            height: 3px;
+            border-radius: 2px;
+            background: #6b3a1d;
+        }
+
+        .santa-body {
+            position: absolute;
+            left: 4px;
+            bottom: 10px;
+            width: 14px;
+            height: 16px;
+            background: #e63946;
+            border-radius: 6px 6px 4px 4px;
+        }
+
+        .santa-head {
+            position: absolute;
+            left: 6px;
+            bottom: 24px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ffe0c2;
+        }
+
+        .santa-hat {
+            position: absolute;
+            left: 4px;
+            bottom: 30px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 2px solid transparent;
+            border-bottom: 10px solid #e63946;
+        }
+
+        .santa-hat::after {
+            content: "";
+            position: absolute;
+            right: -4px;
+            bottom: -2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .reindeer {
+            position: absolute;
+            right: 46px;
+            bottom: 10px;
+            width: 60px;
+            height: 12px;
+        }
+
+        .reindeer::before,
+        .reindeer::after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 10px;
+            border-radius: 6px;
+            background: #8b5a2b;
+            box-shadow: 20px 0 0 #8b5a2b, 40px 0 0 #8b5a2b;
+        }
+
+        .reindeer-nose {
+            position: absolute;
+            left: -3px;
+            top: 4px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #ff4b4b;
+            box-shadow: 20px 0 0 #ffbe4b, 40px 0 0 #ff4b4b;
+        }
+
+        /* Ground */
         .ground {
             position: fixed;
             bottom: 0;
@@ -99,143 +212,81 @@
             opacity: 0.9;
         }
 
-        .bush.b1 { left: 10%; }
-        .bush.b2 { left: 40%; bottom: 22px; }
-        .bush.b3 { left: 70%; }
-        .bush.b4 { left: 85%; bottom: 24px; }
+        .bush.b1 { left: 15%; }
+        .bush.b2 { left: 45%; bottom: 22px; }
+        .bush.b3 { left: 68%; }
+        .bush.b4 { left: 82%; bottom: 24px; }
 
-        /* --- CHRISTMAS TREES --- */
+        /* CHRISTMAS TREES */
         .tree {
             position: absolute;
             bottom: 18px;
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-bottom: 40px solid #1f7a3b;
-        }
-
-        .tree::before {
-            content: "";
-            position: absolute;
-            left: -24px;
-            top: -24px;
             border-left: 24px solid transparent;
             border-right: 24px solid transparent;
-            border-bottom: 38px solid #24924a;
+            border-bottom: 50px solid #1f7a3b;
         }
 
+        .tree::before,
         .tree::after {
             content: "";
             position: absolute;
-            left: -5px;
-            bottom: -12px;
-            width: 10px;
-            height: 12px;
-            background: #5a3c20;
-            border-radius: 2px;
+            left: -28px;
+            border-left: 28px solid transparent;
+            border-right: 28px solid transparent;
         }
 
-        .tree.t1 { left: 6%; }
-        .tree.t2 {
-            left: 82%;
-            transform: scale(0.85);
+        .tree::before {
+            top: -22px;
+            border-bottom: 46px solid #24924a;
         }
 
-        .tree-star {
+        .tree::after {
+            top: -40px;
+            border-bottom: 40px solid #2ca65b;
+        }
+
+        .tree-trunk {
             position: absolute;
-            top: -10px;
             left: -6px;
+            bottom: -12px;
             width: 12px;
             height: 12px;
-            background: radial-gradient(circle, #ffd86b 0%, #f3b136 60%, #c28c1a 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 6px rgba(255, 230, 150, 0.9);
-            animation: twinkle 1.2s ease-in-out infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% { transform: scale(0.9); opacity: 0.8; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* --- ELVES --- */
-        .elf {
-            position: absolute;
-            bottom: 18px;
-            width: 22px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            animation: elf-bounce 1.4s ease-in-out infinite;
-        }
-
-        .elf.e1 { left: 28%; animation-delay: 0s; }
-        .elf.e2 { left: 58%; animation-delay: 0.4s; }
-
-        @keyframes elf-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-
-        .elf-body {
-            width: 16px;
-            height: 18px;
-            background: #1fa34a;
-            border-radius: 3px 3px 4px 4px;
-            position: relative;
-        }
-
-        .elf-body::after {
-            content: "";
-            position: absolute;
-            bottom: -3px;
-            left: 3px;
-            width: 10px;
-            height: 3px;
-            background: #3a2b1a;
             border-radius: 2px;
+            background: #5a3c20;
         }
 
-        .elf-head {
+        .tree-lights {
             position: absolute;
-            top: -14px;
-            left: 3px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ffd7b3;
+            top: -4px;
+            left: -20px;
+            width: 40px;
+            height: 36px;
+            background:
+                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%) 4px 4px / 12px 12px repeat,
+                radial-gradient(circle, #ffd93b 0 55%, transparent 60%) 0px 12px / 12px 12px repeat,
+                radial-gradient(circle, #4be1ff 0 55%, transparent 60%) 8px 20px / 12px 12px repeat;
+            opacity: 0.9;
+            mix-blend-mode: screen;
+            animation: tree-lights-blink 1.4s linear infinite;
         }
 
-        .elf-hat {
-            position: absolute;
-            top: -21px;
-            left: 1px;
-            width: 0;
-            height: 0;
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
-            border-bottom: 12px solid #e63946;
+        @keyframes tree-lights-blink {
+            0%   { opacity: 0.5; transform: translateY(0); }
+            50%  { opacity: 1;   transform: translateY(-1px); }
+            100% { opacity: 0.6; transform: translateY(0); }
         }
 
-        .elf-hat::after {
-            content: "";
-            position: absolute;
-            bottom: -3px;
-            left: -4px;
-            width: 8px;
-            height: 3px;
-            border-radius: 2px;
-            background: #fff;
-        }
+        .tree.t-left { left: 4%; transform: scale(0.9); }
+        .tree.t-right { right: 4%; transform: scale(0.9); }
 
         .train-wrapper {
             margin: 6px 0 8px;
             position: relative;
             padding: 14px 18px 22px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.97);
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             animation: gentle-bob 3s ease-in-out infinite;
         }
@@ -246,36 +297,16 @@
             100% { transform: translateY(0); }
         }
 
-        /* --- LIGHTS AROUND THE CARD --- */
+        /* Subtle light glow around the card */
         .train-wrapper::before {
             content: "";
             position: absolute;
             inset: 4px;
             border-radius: 18px;
-            border: 2px dashed transparent;
             pointer-events: none;
             box-shadow:
-                0 0 0 2px rgba(255, 0, 0, 0.0),
-                0 0 0 2px rgba(255, 215, 0, 0.0);
-            animation: lights-blink 1.4s linear infinite;
-        }
-
-        @keyframes lights-blink {
-            0% {
-                box-shadow:
-                    0 0 0 2px rgba(255, 0, 0, 0.7),
-                    0 0 10px 2px rgba(255, 215, 0, 0.3);
-            }
-            50% {
-                box-shadow:
-                    0 0 0 2px rgba(0, 180, 255, 0.7),
-                    0 0 10px 2px rgba(0, 255, 150, 0.3);
-            }
-            100% {
-                box-shadow:
-                    0 0 0 2px rgba(255, 105, 180, 0.7),
-                    0 0 10px 2px rgba(255, 255, 255, 0.3);
-            }
+                0 0 0 1px rgba(255, 255, 255, 0.7),
+                0 0 16px 2px rgba(255, 215, 0, 0.2);
         }
 
         .train-track-container {
@@ -302,7 +333,7 @@
             pointer-events: none;
         }
 
-        /* Simple train look */
+        /* Train + carriages */
         .engine,
         .carriage {
             position: relative;
@@ -313,11 +344,11 @@
             cursor: pointer;
             background: #f0c95c;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            overflow: hidden;
         }
 
         .engine {
             background: #ff6b6b;
-            border-radius: 14px;
         }
 
         .engine-top {
@@ -382,6 +413,7 @@
             border-radius: 2px;
             background: #555;
         }
+
         .carriage:last-child::after {
             display: none;
         }
@@ -422,6 +454,41 @@
         .engine:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+        }
+
+        /* Fairy lights on train */
+        .fairy-lights {
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            right: 8px;
+            height: 5px;
+            pointer-events: none;
+        }
+
+        .fairy-lights::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
+                radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
+                radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
+                radial-gradient(circle, #9cff6b 0 55%, transparent 60%);
+            background-size: 14px 5px, 14px 5px, 14px 5px, 14px 5px;
+            background-position:
+                0 0,
+                4px 0,
+                8px 0,
+                12px 0;
+            background-repeat: repeat-x;
+            animation: light-chase 1.2s linear infinite;
+            opacity: 0.95;
+        }
+
+        @keyframes light-chase {
+            0%   { background-position-x: 0, 4px, 8px, 12px; }
+            100% { background-position-x: -14px, -10px, -6px, -2px; }
         }
 
         .track {
@@ -581,12 +648,24 @@
     </style>
 </head>
 <body>
-    <!-- Animated background clouds -->
+    <!-- Clouds -->
     <div class="sky-cloud" style="left:-15%;"></div>
     <div class="sky-cloud cloud2" style="left:-30%;"></div>
     <div class="sky-cloud cloud3" style="left:-25%;"></div>
 
-    <!-- Ground + bushes + trees + elves -->
+    <!-- Santa flyover -->
+    <div class="santa">
+        <div class="santa-sleigh">
+            <div class="santa-body"></div>
+            <div class="santa-head"></div>
+            <div class="santa-hat"></div>
+        </div>
+        <div class="reindeer">
+            <div class="reindeer-nose"></div>
+        </div>
+    </div>
+
+    <!-- Ground area -->
     <div class="ground">
         <div class="bush b1"></div>
         <div class="bush b2"></div>
@@ -594,23 +673,13 @@
         <div class="bush b4"></div>
 
         <!-- Christmas trees -->
-        <div class="tree t1">
-            <div class="tree-star"></div>
+        <div class="tree t-left">
+            <div class="tree-trunk"></div>
+            <div class="tree-lights"></div>
         </div>
-        <div class="tree t2">
-            <div class="tree-star"></div>
-        </div>
-
-        <!-- Elves -->
-        <div class="elf e1">
-            <div class="elf-body"></div>
-            <div class="elf-head"></div>
-            <div class="elf-hat"></div>
-        </div>
-        <div class="elf e2">
-            <div class="elf-body"></div>
-            <div class="elf-head"></div>
-            <div class="elf-hat"></div>
+        <div class="tree t-right">
+            <div class="tree-trunk"></div>
+            <div class="tree-lights"></div>
         </div>
     </div>
 
@@ -636,6 +705,7 @@
                             <div class="smoke-cloud two"></div>
                             <div class="smoke-cloud three"></div>
                         </div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -645,6 +715,7 @@
                     <!-- 5 clickable carriages = ratings 1–5 -->
                     <div class="carriage" data-rating="1">
                         <div class="carriage-window"></div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -652,6 +723,7 @@
                     </div>
                     <div class="carriage" data-rating="2">
                         <div class="carriage-window"></div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -659,6 +731,7 @@
                     </div>
                     <div class="carriage" data-rating="3">
                         <div class="carriage-window"></div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -666,6 +739,7 @@
                     </div>
                     <div class="carriage" data-rating="4">
                         <div class="carriage-window"></div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -673,6 +747,7 @@
                     </div>
                     <div class="carriage" data-rating="5">
                         <div class="carriage-window"></div>
+                        <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
                             <div class="wheel"></div>
@@ -835,6 +910,7 @@
     </script>
 </body>
 </html>
+
 
 
 
