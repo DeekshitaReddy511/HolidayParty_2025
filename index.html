@@ -50,7 +50,7 @@
                 24px 8px 0 0 #ffffff,
                 48px 4px 0 0 #ffffff;
             opacity: 0.9;
-            z-index: -1;
+            z-index: -3;
             animation: cloud-drift 40s linear infinite;
         }
         .sky-cloud.cloud2 {
@@ -72,7 +72,7 @@
             100% { transform: translateX(120vw); }
         }
 
-        /* === SANTA FLYOVER (festive) === */
+        /* SANTA FLYOVER (same as before) */
         .santa {
             position: fixed;
             top: 11%;
@@ -204,7 +204,7 @@
         .bush.b3 { left: 70%; }
         .bush.b4 { left: 84%; bottom: 24px; }
 
-        /* Christmas trees (simpler, cleaner) */
+        /* Trees */
         .tree {
             position: absolute;
             bottom: 18px;
@@ -232,7 +232,6 @@
             background: #5a3c20;
             border-radius: 2px;
         }
-
         .tree-lights {
             position: absolute;
             top: -12px;
@@ -306,73 +305,209 @@
             pointer-events: none;
         }
 
-        /* Train like your screenshot */
+        /* === CHRISTMAS TRAIN (inspired by your image) === */
+
         .engine,
         .carriage {
             position: relative;
             width: 60px;
             height: 50px;
-            border-radius: 14px;
-            border: 2px solid #3a3a3a;
+            border-radius: 16px;
+            border: 2px solid #8b3b3b;
             cursor: pointer;
-            background: #ffc857;
+            background: #d62828;
+            box-shadow: 0 2px 0 #a01e1e;
+            overflow: visible;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .engine {
-            background: #ff6b6b;
+            width: 66px;
+        }
+
+        /* decorative gold swirl bar */
+        .engine::before,
+        .carriage::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 215, 130, 0.95);
+            box-shadow: inset 0 0 2px rgba(255,255,255,0.6);
         }
 
         .engine-roof {
             position: absolute;
-            top: -6px;
-            left: 8px;
-            right: 10px;
+            top: -8px;
+            left: 6px;
+            right: 18px;
             height: 10px;
             border-radius: 10px 10px 4px 4px;
-            background: #444;
+            background: #b11b1b;
         }
 
         .engine-window {
             position: absolute;
-            top: 10px;
-            left: 12px;
-            width: 22px;
-            height: 18px;
-            border-radius: 5px;
-            background: #ffffff;
-            border: 1px solid #ccc;
+            top: 11px;
+            left: 14px;
+            width: 26px;
+            height: 20px;
+            border-radius: 8px;
+            background: #ffe9d6;
+            border: 2px solid #f7b28f;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
         }
 
         .chimney {
             position: absolute;
-            top: -18px;
+            top: -20px;
             right: 10px;
             width: 10px;
-            height: 26px;
+            height: 28px;
             border-radius: 8px;
-            background: #555;
+            background: #b11b1b;
+            box-shadow: inset 0 0 0 2px #861010;
+        }
+
+        /* Santa face in engine */
+        .engine-face {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffe0c2;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 0 2px #f7b28f;
+        }
+        .engine-face::before {
+            content: "";
+            position: absolute;
+            left: -2px;
+            right: -2px;
+            top: -7px;
+            height: 11px;
+            border-radius: 11px 11px 4px 4px;
+            background: #e63946;
+            border-bottom: 3px solid #ffffff;
+        }
+        .engine-face::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 2px;
+            height: 7px;
+            border-radius: 10px;
+            background: #fcd3b3;
         }
 
         .carriage {
-            background: #ffc857;
+            background: #d62828;
         }
 
-        .carriage[data-rating="1"] { background: #ff6b6b; }
-        .carriage[data-rating="2"] { background: #ff9f6b; }
-        .carriage[data-rating="3"] { background: #ffc857; }
-        .carriage[data-rating="4"] { background: #ffe28a; }
-        .carriage[data-rating="5"] { background: #a5e27a; }
+        /* cute characters on carriages */
+        .carriage-character {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #f7b28f;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+        }
+
+        /* tiny hats / colors per carriage */
+        .char-elf::before,
+        .char-reindeer::before,
+        .char-penguin::before,
+        .char-bear::before {
+            content: "";
+            position: absolute;
+            left: 3px;
+            right: 3px;
+            top: -7px;
+            border-radius: 10px 10px 0 0;
+            height: 9px;
+        }
+        .char-elf::before { background: #2d9f55; }
+        .char-reindeer::before { background: #b08968; }
+        .char-penguin::before { background: #333; }
+        .char-bear::before { background: #f3d19e; }
+
+        .char-penguin {
+            background: radial-gradient(circle at 50% 40%, #ffffff 0 65%, #111 65% 100%);
+        }
+        .char-bear {
+            background: #ffe8c8;
+        }
+
+        /* Tree & gifts wagon (rating 5) */
+        .carriage[data-rating="5"] .carriage-character {
+            top: -24px;
+            width: 0;
+            height: 0;
+            border-radius: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-bottom: 34px solid #1f7a3b;
+            border: none;
+            box-shadow: 0 0 0 2px #155a2a;
+        }
+        .carriage[data-rating="5"] .carriage-character::before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: -12px;
+            width: 24px;
+            height: 10px;
+            background:
+                linear-gradient(90deg,#ff4b4b 0 33%,#ffd93b 33% 66%,#4be1ff 66% 100%);
+            border-radius: 3px;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+        }
+        .carriage[data-rating="5"] .carriage-character::after {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: -2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #ffd93b;
+            box-shadow: 6px -4px 0 #ff4b4b, -6px -4px 0 #4be1ff;
+        }
+
+        /* Assign different character types */
+        .carriage[data-rating="1"] .carriage-character { background:#ffecec; }
+        .carriage[data-rating="1"] .carriage-character::before { background:#e63946; } /* elf in red */
+
+        .carriage[data-rating="2"] .carriage-character { background:#ffe8d2; }
+        .carriage[data-rating="2"] .carriage-character::before { background:#b08968; } /* reindeer hat */
+
+        .carriage[data-rating="3"] .carriage-character { background: radial-gradient(circle at 50% 40%, #ffffff 0 65%, #111 65% 100%); }
+        .carriage[data-rating="3"] .carriage-character::before { background:#ff4b4b; } /* penguin hat */
+
+        .carriage[data-rating="4"] .carriage-character { background:#fff5e2; }
+        .carriage[data-rating="4"] .carriage-character::before { background:#f3d19e; } /* bear */
 
         .carriage-window {
             position: absolute;
-            top: 10px;
+            top: 13px;
             left: 11px;
             right: 11px;
             height: 18px;
-            border-radius: 5px;
-            background: #ffffff;
-            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #ffe9d6;
+            border: 2px solid #f7b28f;
         }
 
         .carriage::after {
@@ -390,7 +525,7 @@
         .wheel-row {
             position: absolute;
             bottom: -8px;
-            left: 10px;
+            left: 8px;
             display: flex;
             gap: 8px;
         }
@@ -398,9 +533,12 @@
         .wheel {
             width: 14px;
             height: 14px;
-            background: #222;
+            background: #d0d0d0;
             border-radius: 50%;
-            box-shadow: 0 1px 0 #000;
+            box-shadow:
+                inset 0 0 0 2px #ffffff,
+                0 1px 0 #000;
+            border: 2px solid #999;
             animation: wheel-spin 0.9s linear infinite;
         }
         @keyframes wheel-spin {
@@ -418,7 +556,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.18);
         }
 
-        /* Small light bar across top of each car */
+        /* Fairy lights along the top of each car */
         .fairy-lights {
             position: absolute;
             top: 6px;
@@ -594,7 +732,7 @@
     <div class="sky-cloud cloud2" style="left:-30%;"></div>
     <div class="sky-cloud cloud3" style="left:-25%;"></div>
 
-    <!-- Santa + reindeer -->
+    <!-- Santa + reindeer (unchanged) -->
     <div class="santa">
         <div class="santa-sleigh">
             <div class="santa-body"></div>
@@ -638,7 +776,7 @@
                 <div class="train-shadow"></div>
 
                 <div id="train" class="train rating-0">
-                    <!-- Engine -->
+                    <!-- Engine with Santa -->
                     <div class="engine">
                         <div class="engine-roof"></div>
                         <div class="engine-window"></div>
@@ -648,6 +786,7 @@
                             <div class="smoke-cloud two"></div>
                             <div class="smoke-cloud three"></div>
                         </div>
+                        <div class="engine-face"></div>
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -658,6 +797,7 @@
                     <!-- Carriages 1–5 -->
                     <div class="carriage" data-rating="1">
                         <div class="carriage-window"></div>
+                        <div class="carriage-character char-elf"></div>
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -666,6 +806,7 @@
                     </div>
                     <div class="carriage" data-rating="2">
                         <div class="carriage-window"></div>
+                        <div class="carriage-character char-reindeer"></div>
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -674,6 +815,7 @@
                     </div>
                     <div class="carriage" data-rating="3">
                         <div class="carriage-window"></div>
+                        <div class="carriage-character char-penguin"></div>
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -682,6 +824,7 @@
                     </div>
                     <div class="carriage" data-rating="4">
                         <div class="carriage-window"></div>
+                        <div class="carriage-character char-bear"></div>
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -690,6 +833,7 @@
                     </div>
                     <div class="carriage" data-rating="5">
                         <div class="carriage-window"></div>
+                        <div class="carriage-character"></div> <!-- tree wagon -->
                         <div class="fairy-lights"></div>
                         <div class="wheel-row">
                             <div class="wheel"></div>
@@ -846,6 +990,7 @@
     </script>
 </body>
 </html>
+
 
 
 
