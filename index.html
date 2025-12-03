@@ -72,6 +72,67 @@
             100% { transform: translateX(120vw); }
         }
 
+        /* === EXTRA CHRISTMAS BACKGROUND === */
+
+        /* Falling snow */
+        .snow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.8) 0 2px, transparent 3px),
+                radial-gradient(circle, rgba(255,255,255,0.6) 0 2px, transparent 3px);
+            background-size: 18px 18px, 26px 26px;
+            background-position: 0 0, 10px -10px;
+            opacity: 0.6;
+            mix-blend-mode: screen;
+            animation: snow-fall 7s linear infinite;
+            z-index: -0;
+        }
+        @keyframes snow-fall {
+            0%   { background-position: 0 -40px, 10px -80px; }
+            100% { background-position: 0 40px, 10px 80px; }
+        }
+
+        /* Garland of lights across top */
+        .top-lights {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            right: 0;
+            height: 26px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .top-lights::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 8px;
+            height: 2px;
+            background: #3a4b63;
+        }
+        .top-lights::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
+                radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
+                radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
+                radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
+            background-size: 22px 22px;
+            background-position: 0 4px, 6px 8px, 12px 4px, 18px 8px;
+            background-repeat: repeat-x;
+            animation: garland-blink 1.5s linear infinite;
+        }
+        @keyframes garland-blink {
+            0%   { opacity: 0.5; transform: translateY(0); }
+            50%  { opacity: 1;   transform: translateY(1px); }
+            100% { opacity: 0.5; transform: translateY(0); }
+        }
+
         /* === SANTA FLYOVER (festive) === */
         .santa {
             position: fixed;
@@ -204,7 +265,7 @@
         .bush.b3 { left: 70%; }
         .bush.b4 { left: 84%; bottom: 24px; }
 
-        /* Christmas trees (simpler, cleaner) */
+        /* Christmas trees */
         .tree {
             position: absolute;
             bottom: 18px;
@@ -266,6 +327,70 @@
             100% { opacity: 0.6; }
         }
 
+        /* Presents & candy canes on ground */
+        .present {
+            position: absolute;
+            bottom: 18px;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        }
+        .present::before,
+        .present::after {
+            content: "";
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+        }
+        .present::before {
+            width: 4px;
+            top: 0;
+            bottom: 0;
+            left: 7px;
+        }
+        .present::after {
+            height: 4px;
+            left: 0;
+            right: 0;
+            top: 7px;
+        }
+        .present.p1 { left: 10%; background: #ff6b6b; }
+        .present.p2 { left: 32%; background: #ffd93b; }
+        .present.p3 { right: 18%; background: #4be1ff; }
+
+        .candy-cane {
+            position: absolute;
+            bottom: 22px;
+            width: 10px;
+            height: 26px;
+            border-radius: 5px 5px 0 0;
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #ff4b4b 0 4px,
+                    #ffffff 4px 8px
+                );
+        }
+        .candy-cane::after {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 0;
+            width: 14px;
+            height: 10px;
+            border-radius: 8px 8px 0 0;
+            border-top: 4px solid transparent;
+            border-left: 4px solid transparent;
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    #ff4b4b 0 4px,
+                    #ffffff 4px 8px
+                );
+        }
+        .candy-cane.c1 { left: 22%; }
+        .candy-cane.c2 { right: 26%; }
+
         .train-wrapper {
             margin: 6px 0 8px;
             position: relative;
@@ -306,20 +431,19 @@
             pointer-events: none;
         }
 
-        /* Train like your screenshot */
+        /* Engine (unchanged) */
         .engine,
         .carriage {
             position: relative;
             width: 60px;
             height: 50px;
-            border-radius: 14px;
-            border: 2px solid #3a3a3a;
             cursor: pointer;
-            background: #ffc857;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .engine {
+            border-radius: 14px;
+            border: 2px solid #3a3a3a;
             background: #ff6b6b;
         }
 
@@ -354,71 +478,119 @@
             background: #555;
         }
 
+        /* Sleigh-style carriages */
         .carriage {
-            background: #ffc857;
+            background: transparent;
+            border: none;
+            width: 70px;
+            height: 55px;
         }
 
-        .carriage[data-rating="1"] { background: #ff6b6b; }
-        .carriage[data-rating="2"] { background: #ff9f6b; }
-        .carriage[data-rating="3"] { background: #ffc857; }
-        .carriage[data-rating="4"] { background: #ffe28a; }
-        .carriage[data-rating="5"] { background: #a5e27a; }
-
-        .carriage-window {
+        .sleigh-body {
             position: absolute;
-            top: 10px;
-            left: 11px;
-            right: 11px;
-            height: 18px;
-            border-radius: 5px;
-            background: #ffffff;
-            border: 1px solid #ccc;
+            bottom: 6px;
+            left: 4px;
+            right: 6px;
+            height: 24px;
+            border-radius: 10px 18px 2px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .carriage::after {
+        .sleigh-edge {
+            position: absolute;
+            bottom: 4px;
+            left: 6px;
+            right: 8px;
+            height: 4px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.3);
+            opacity: 0.9;
+        }
+
+        .sleigh-rail {
+            position: absolute;
+            bottom: 0;
+            left: 4px;
+            right: 4px;
+            height: 4px;
+            border-radius: 3px;
+            background: #b5652a;
+            box-shadow: 0 0 0 2px #84401a;
+        }
+        .sleigh-rail::before,
+        .sleigh-rail::after {
             content: "";
             position: absolute;
-            right: -6px;
-            bottom: 8px;
-            width: 12px;
-            height: 4px;
-            border-radius: 2px;
-            background: #555;
-        }
-        .carriage:last-child::after { display: none; }
-
-        .wheel-row {
-            position: absolute;
-            bottom: -8px;
-            left: 10px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .wheel {
-            width: 14px;
-            height: 14px;
-            background: #222;
+            bottom: -4px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            box-shadow: 0 1px 0 #000;
-            animation: wheel-spin 0.9s linear infinite;
+            border: 3px solid #84401a;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            background: #b5652a;
         }
-        @keyframes wheel-spin {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .sleigh-rail::before { left: 4px; transform: rotate(-40deg); }
+        .sleigh-rail::after  { right: 4px; transform: rotate(-10deg); }
+
+        .gift {
+            position: absolute;
+            bottom: 24px;
+            width: 14px;
+            height: 16px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .gift::before,
+        .gift::after {
+            content: "";
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+        }
+        .gift::before {
+            width: 3px;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+        }
+        .gift::after {
+            height: 3px;
+            left: 0;
+            right: 0;
+            top: 6px;
         }
 
-        .carriage.selected {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.22);
-        }
-        .carriage:hover,
-        .engine:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.18);
-        }
+        .gift1 { left: 10px; }
+        .gift2 { left: 28px; transform: scale(0.9); }
+        .gift3 { right: 12px; transform: scale(0.95); }
 
-        /* Small light bar across top of each car */
+        /* Color per rating */
+        .carriage[data-rating="1"] .sleigh-body { background: #ff5c5c; }
+        .carriage[data-rating="2"] .sleigh-body { background: #ff9f6b; }
+        .carriage[data-rating="3"] .sleigh-body { background: #ffc857; }
+        .carriage[data-rating="4"] .sleigh-body { background: #ffe28a; }
+        .carriage[data-rating="5"] .sleigh-body { background: #a5e27a; }
+
+        .carriage[data-rating="1"] .gift1 { background: #ffd93b; }
+        .carriage[data-rating="1"] .gift2 { background: #4be1ff; }
+        .carriage[data-rating="1"] .gift3 { background: #9b5de5; }
+
+        .carriage[data-rating="2"] .gift1 { background: #4be1ff; }
+        .carriage[data-rating="2"] .gift2 { background: #ffd93b; }
+        .carriage[data-rating="2"] .gift3 { background: #ff6b6b; }
+
+        .carriage[data-rating="3"] .gift1 { background: #9b5de5; }
+        .carriage[data-rating="3"] .gift2 { background: #ffd93b; }
+        .carriage[data-rating="3"] .gift3 { background: #4be1ff; }
+
+        .carriage[data-rating="4"] .gift1 { background: #ff6b6b; }
+        .carriage[data-rating="4"] .gift2 { background: #a5e27a; }
+        .carriage[data-rating="4"] .gift3 { background: #ffd93b; }
+
+        .carriage[data-rating="5"] .gift1 { background: #ffd93b; }
+        .carriage[data-rating="5"] .gift2 { background: #4be1ff; }
+        .carriage[data-rating="5"] .gift3 { background: #ff6b6b; }
+
         .fairy-lights {
             position: absolute;
             top: 6px;
@@ -444,6 +616,16 @@
         @keyframes light-chase {
             0%   { background-position-x: 0, 5px, 10px; }
             100% { background-position-x: -14px, -9px, -4px; }
+        }
+
+        .carriage.selected {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.22);
+        }
+        .carriage:hover,
+        .engine:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.18);
         }
 
         .track {
@@ -594,6 +776,10 @@
     <div class="sky-cloud cloud2" style="left:-30%;"></div>
     <div class="sky-cloud cloud3" style="left:-25%;"></div>
 
+    <!-- Snow + top lights -->
+    <div class="snow"></div>
+    <div class="top-lights"></div>
+
     <!-- Santa + reindeer -->
     <div class="santa">
         <div class="santa-sleigh">
@@ -607,7 +793,7 @@
         </div>
     </div>
 
-    <!-- Ground + trees -->
+    <!-- Ground + trees + presents + candy canes -->
     <div class="ground">
         <div class="bush b1"></div>
         <div class="bush b2"></div>
@@ -624,6 +810,13 @@
             <div class="tree-lights"></div>
             <div class="tree-star"></div>
         </div>
+
+        <div class="present p1"></div>
+        <div class="present p2"></div>
+        <div class="present p3"></div>
+
+        <div class="candy-cane c1"></div>
+        <div class="candy-cane c2"></div>
     </div>
 
     <div class="widget-root">
@@ -638,7 +831,7 @@
                 <div class="train-shadow"></div>
 
                 <div id="train" class="train rating-0">
-                    <!-- Engine -->
+                    <!-- Engine (unchanged) -->
                     <div class="engine">
                         <div class="engine-roof"></div>
                         <div class="engine-window"></div>
@@ -655,46 +848,51 @@
                         </div>
                     </div>
 
-                    <!-- Carriages 1–5 -->
+                    <!-- Sleigh carriages 1–5 -->
                     <div class="carriage" data-rating="1">
-                        <div class="carriage-window"></div>
+                        <div class="sleigh-body"></div>
+                        <div class="sleigh-edge"></div>
+                        <div class="sleigh-rail"></div>
+                        <div class="gift gift1"></div>
+                        <div class="gift gift2"></div>
+                        <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
                     </div>
                     <div class="carriage" data-rating="2">
-                        <div class="carriage-window"></div>
+                        <div class="sleigh-body"></div>
+                        <div class="sleigh-edge"></div>
+                        <div class="sleigh-rail"></div>
+                        <div class="gift gift1"></div>
+                        <div class="gift gift2"></div>
+                        <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
                     </div>
                     <div class="carriage" data-rating="3">
-                        <div class="carriage-window"></div>
+                        <div class="sleigh-body"></div>
+                        <div class="sleigh-edge"></div>
+                        <div class="sleigh-rail"></div>
+                        <div class="gift gift1"></div>
+                        <div class="gift gift2"></div>
+                        <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
                     </div>
                     <div class="carriage" data-rating="4">
-                        <div class="carriage-window"></div>
+                        <div class="sleigh-body"></div>
+                        <div class="sleigh-edge"></div>
+                        <div class="sleigh-rail"></div>
+                        <div class="gift gift1"></div>
+                        <div class="gift gift2"></div>
+                        <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
                     </div>
                     <div class="carriage" data-rating="5">
-                        <div class="carriage-window"></div>
+                        <div class="sleigh-body"></div>
+                        <div class="sleigh-edge"></div>
+                        <div class="sleigh-rail"></div>
+                        <div class="gift gift1"></div>
+                        <div class="gift gift2"></div>
+                        <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
                     </div>
                 </div>
 
@@ -846,6 +1044,3 @@
     </script>
 </body>
 </html>
-
-
-
