@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rate Your Train Ride</title>
     <style>
+        /* BASIC LAYOUT (fits 500x350 iframe) */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -15,21 +16,18 @@
             padding: 10px 8px;
             overflow-x: hidden;
             position: relative;
-            min-height: 350px; /* fits iframe */
+            min-height: 350px;
         }
-
         .widget-root {
             max-width: 460px;
             width: 100%;
             margin: 0 auto;
         }
-
         h1 {
             margin: 0 0 4px;
             font-size: 22px;
             text-align: center;
         }
-
         .subtitle {
             margin-bottom: 10px;
             color: #555;
@@ -38,7 +36,7 @@
             line-height: 1.4;
         }
 
-        /* Clouds */
+        /* SIMPLE SKY DECOR */
         .sky-cloud {
             position: fixed;
             top: 8%;
@@ -46,11 +44,9 @@
             height: 45px;
             background: #ffffff;
             border-radius: 60px;
-            box-shadow:
-                24px 8px 0 0 #ffffff,
-                48px 4px 0 0 #ffffff;
+            box-shadow: 24px 8px 0 0 #ffffff, 48px 4px 0 0 #ffffff;
             opacity: 0.9;
-            z-index: -1;
+            z-index: -3;
             animation: cloud-drift 40s linear infinite;
         }
         .sky-cloud.cloud2 {
@@ -72,111 +68,7 @@
             100% { transform: translateX(120vw); }
         }
 
-        /* === SANTA FLYOVER (festive) === */
-        .santa {
-            position: fixed;
-            top: 11%;
-            right: -30%;
-            width: 130px;
-            height: 40px;
-            pointer-events: none;
-            z-index: 0;
-            animation: santa-fly 18s linear infinite;
-        }
-        @keyframes santa-fly {
-            0%   { transform: translateX(0); opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 1; }
-            100% { transform: translateX(-90vw); opacity: 0; }
-        }
-
-        .santa-sleigh {
-            position: absolute;
-            right: 0;
-            bottom: 6px;
-            width: 42px;
-            height: 15px;
-            border-radius: 0 0 12px 12px;
-            background: #b22222;
-            box-shadow: 0 0 4px rgba(0,0,0,0.25);
-        }
-        .santa-sleigh::after {
-            content: "";
-            position: absolute;
-            bottom: -4px;
-            left: 4px;
-            right: 4px;
-            height: 3px;
-            border-radius: 2px;
-            background: #6b3a1d;
-        }
-
-        .santa-body {
-            position: absolute;
-            left: 6px;
-            bottom: 10px;
-            width: 16px;
-            height: 16px;
-            background: #e63946;
-            border-radius: 6px 6px 4px 4px;
-        }
-        .santa-head {
-            position: absolute;
-            left: 9px;
-            bottom: 24px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ffe0c2;
-        }
-        .santa-hat {
-            position: absolute;
-            left: 7px;
-            bottom: 31px;
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 3px solid transparent;
-            border-bottom: 10px solid #e63946;
-        }
-        .santa-hat::after {
-            content: "";
-            position: absolute;
-            right: -4px;
-            bottom: -2px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #fff;
-        }
-
-        .reindeer {
-            position: absolute;
-            right: 46px;
-            bottom: 10px;
-            width: 70px;
-            height: 14px;
-        }
-        .reindeer-body {
-            position: absolute;
-            width: 16px;
-            height: 12px;
-            border-radius: 6px;
-            background: #8b5a2b;
-            box-shadow: 22px 0 0 #8b5a2b, 44px 0 0 #8b5a2b;
-        }
-        .reindeer-nose {
-            position: absolute;
-            left: -4px;
-            top: 4px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #ff4b4b;
-            box-shadow: 22px 0 0 #ffd93b, 44px 0 0 #ff4b4b;
-        }
-
-        /* Ground */
+        /* GROUND */
         .ground {
             position: fixed;
             bottom: 0;
@@ -186,7 +78,6 @@
             background: linear-gradient(180deg, #76c26b 0%, #4e9e4a 100%);
             z-index: -1;
         }
-
         .bush {
             position: absolute;
             bottom: 18px;
@@ -194,9 +85,7 @@
             height: 26px;
             background: #3f8c3a;
             border-radius: 30px;
-            box-shadow:
-                18px 0 0 0 #3f8c3a,
-                36px 0 0 0 #3f8c3a;
+            box-shadow: 18px 0 0 0 #3f8c3a, 36px 0 0 0 #3f8c3a;
             opacity: 0.9;
         }
         .bush.b1 { left: 16%; }
@@ -204,7 +93,7 @@
         .bush.b3 { left: 70%; }
         .bush.b4 { left: 84%; bottom: 24px; }
 
-        /* Christmas trees (simpler, cleaner) */
+        /* CHRISTMAS TREES */
         .tree {
             position: absolute;
             bottom: 18px;
@@ -232,7 +121,6 @@
             background: #5a3c20;
             border-radius: 2px;
         }
-
         .tree-lights {
             position: absolute;
             top: -12px;
@@ -243,7 +131,6 @@
                 radial-gradient(circle, #ff4b4b 0 55%, transparent 60%) 4px 4px/10px 10px repeat,
                 radial-gradient(circle, #ffd93b 0 55%, transparent 60%) 0px 14px/10px 10px repeat,
                 radial-gradient(circle, #4be1ff 0 55%, transparent 60%) 8px 22px/10px 10px repeat;
-            mix-blend-mode: screen;
             opacity: 0.8;
             animation: tree-blink 1.4s linear infinite;
         }
@@ -259,13 +146,13 @@
         }
         .tree.t-left { left: 8%; transform: scale(0.95); }
         .tree.t-right { right: 8%; transform: scale(0.95); }
-
         @keyframes tree-blink {
             0% { opacity: 0.5; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
         }
 
+        /* CARD AROUND TRAIN */
         .train-wrapper {
             margin: 6px 0 8px;
             position: relative;
@@ -280,202 +167,39 @@
             50%  { transform: translateY(-2px); }
             100% { transform: translateY(0); }
         }
-
         .train-track-container {
             position: relative;
         }
 
+        /* === IMAGE-BASED TRAIN === */
         .train {
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
             position: relative;
+            display: inline-block;
             transition: transform 0.3s ease;
             z-index: 1;
         }
-
+        .train-image {
+            display: block;
+            width: 360px; /* adjust if your PNG size is very different */
+            height: auto;
+        }
         .train-shadow {
             position: absolute;
             left: 0;
             right: 0;
-            bottom: 22px;
+            bottom: 10px;
             height: 8px;
             background: radial-gradient(ellipse at center,
-                rgba(0,0,0,0.15) 0,
+                rgba(0,0,0,0.18) 0,
                 rgba(0,0,0,0.0) 70%);
             pointer-events: none;
         }
 
-        /* Train like your screenshot */
-        .engine,
-        .carriage {
-            position: relative;
-            width: 60px;
-            height: 50px;
-            border-radius: 14px;
-            border: 2px solid #3a3a3a;
-            cursor: pointer;
-            background: #ffc857;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .engine {
-            background: #ff6b6b;
-        }
-
-        .engine-roof {
-            position: absolute;
-            top: -6px;
-            left: 8px;
-            right: 10px;
-            height: 10px;
-            border-radius: 10px 10px 4px 4px;
-            background: #444;
-        }
-
-        .engine-window {
-            position: absolute;
-            top: 10px;
-            left: 12px;
-            width: 22px;
-            height: 18px;
-            border-radius: 5px;
-            background: #ffffff;
-            border: 1px solid #ccc;
-        }
-
-        .chimney {
-            position: absolute;
-            top: -18px;
-            right: 10px;
-            width: 10px;
-            height: 26px;
-            border-radius: 8px;
-            background: #555;
-        }
-
-        .carriage {
-            background: #ffc857;
-        }
-
-        .carriage[data-rating="1"] { background: #ff6b6b; }
-        .carriage[data-rating="2"] { background: #ff9f6b; }
-        .carriage[data-rating="3"] { background: #ffc857; }
-        .carriage[data-rating="4"] { background: #ffe28a; }
-        .carriage[data-rating="5"] { background: #a5e27a; }
-
-        .carriage-window {
-            position: absolute;
-            top: 10px;
-            left: 11px;
-            right: 11px;
-            height: 18px;
-            border-radius: 5px;
-            background: #ffffff;
-            border: 1px solid #ccc;
-        }
-
-        .carriage::after {
-            content: "";
-            position: absolute;
-            right: -6px;
-            bottom: 8px;
-            width: 12px;
-            height: 4px;
-            border-radius: 2px;
-            background: #555;
-        }
-        .carriage:last-child::after { display: none; }
-
-        .wheel-row {
-            position: absolute;
-            bottom: -8px;
-            left: 10px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .wheel {
-            width: 14px;
-            height: 14px;
-            background: #222;
-            border-radius: 50%;
-            box-shadow: 0 1px 0 #000;
-            animation: wheel-spin 0.9s linear infinite;
-        }
-        @keyframes wheel-spin {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .carriage.selected {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.22);
-        }
-        .carriage:hover,
-        .engine:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.18);
-        }
-
-        /* Small light bar across top of each car */
-        .fairy-lights {
-            position: absolute;
-            top: 6px;
-            left: 8px;
-            right: 8px;
-            height: 4px;
-            pointer-events: none;
-        }
-        .fairy-lights::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
-                radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
-                radial-gradient(circle, #4be1ff 0 55%, transparent 60%);
-            background-size: 14px 4px, 14px 4px, 14px 4px;
-            background-position: 0 0, 5px 0, 10px 0;
-            background-repeat: repeat-x;
-            opacity: 0.8;
-            animation: light-chase 1.3s linear infinite;
-        }
-        @keyframes light-chase {
-            0%   { background-position-x: 0, 5px, 10px; }
-            100% { background-position-x: -14px, -9px, -4px; }
-        }
-
-        .track {
-            width: 380px;
-            height: 6px;
-            background: #555;
-            border-radius: 4px;
-            margin-top: 20px;
-            position: relative;
-        }
-        .track::before {
-            content: "";
-            position: absolute;
-            top: -3px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: repeating-linear-gradient(
-                to right,
-                #333 0,
-                #333 16px,
-                #999 16px,
-                #999 28px
-            );
-            opacity: 0.6;
-        }
-
-        /* Smoke */
+        /* Smoke positioned over the chimney – adjust left/top if needed */
         .smoke-stack {
             position: absolute;
-            top: -22px;
-            right: 12px;
+            top: -20px;   /* tweak these two values if misaligned */
+            left: 80px;   /* move left/right to sit on chimney */
             width: 0;
             height: 0;
             z-index: 2;
@@ -489,46 +213,85 @@
         .smoke-cloud.one {
             width: 14px;
             height: 14px;
-            top: -4px;
+            top: -2px;
             left: -6px;
             animation-delay: 0s;
         }
         .smoke-cloud.two {
             width: 18px;
             height: 18px;
-            top: -20px;
+            top: -18px;
             left: -10px;
             animation-delay: 0.3s;
         }
         .smoke-cloud.three {
             width: 22px;
             height: 22px;
-            top: -36px;
+            top: -34px;
             left: -14px;
             animation-delay: 0.6s;
         }
         @keyframes smoke-puff {
-            0% {
-                transform: translateY(4px) scale(0.7);
-                opacity: 0;
-            }
-            30% { opacity: 0.6; }
-            70% {
-                transform: translateY(-14px) scale(1);
-                opacity: 0.9;
-            }
-            100% {
-                transform: translateY(-24px) scale(1.1);
-                opacity: 0;
-            }
+            0%   { transform: translateY(4px)  scale(0.7); opacity: 0; }
+            30%  { opacity: 0.6; }
+            70%  { transform: translateY(-14px) scale(1.0); opacity: 0.9; }
+            100% { transform: translateY(-24px) scale(1.1); opacity: 0; }
         }
 
+        /* INVISIBLE CLICKABLE ZONES: ENGINE + 3 CARS + TREE CAR */
+        .rating-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20%;
+            cursor: pointer;
+        }
+        .rating-zone[data-rating="1"] { left: 0%; }
+        .rating-zone[data-rating="2"] { left: 20%; }
+        .rating-zone[data-rating="3"] { left: 40%; }
+        .rating-zone[data-rating="4"] { left: 60%; }
+        .rating-zone[data-rating="5"] { left: 80%; }
+
+        .rating-zone.selected {
+            box-shadow:
+                0 0 0 2px rgba(255,255,255,0.9),
+                0 0 12px rgba(255,215,0,0.9);
+            border-radius: 10px;
+        }
+
+        /* TRACK BELOW IMAGE */
+        .track {
+            width: 380px;
+            height: 6px;
+            background: #85552e;
+            border-radius: 4px;
+            margin-top: 20px;
+            position: relative;
+            box-shadow: inset 0 0 0 2px #5e3719;
+        }
+        .track::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 0;
+            right: 0;
+            height: 16px;
+            background-image: linear-gradient(
+                to right,
+                transparent 0 6px,
+                #b8864b 6px 10px,
+                transparent 10px 16px
+            );
+            background-size: 16px 16px;
+            opacity: 0.9;
+        }
+
+        /* TEXT + BUTTON */
         .rating-text {
             margin-top: 4px;
             font-size: 12px;
             text-align: center;
         }
-
         .controls {
             margin-top: 6px;
             display: flex;
@@ -536,7 +299,6 @@
             align-items: center;
             gap: 6px;
         }
-
         button {
             padding: 6px 14px;
             border-radius: 999px;
@@ -558,7 +320,6 @@
             cursor: not-allowed;
             box-shadow: none;
         }
-
         .debug-note {
             margin-top: 4px;
             font-size: 10px;
@@ -566,7 +327,7 @@
             text-align: center;
         }
 
-        /* Tooltip */
+        /* TOOLTIP */
         #hover-tooltip {
             position: fixed;
             padding: 6px 8px;
@@ -593,19 +354,6 @@
     <div class="sky-cloud" style="left:-15%;"></div>
     <div class="sky-cloud cloud2" style="left:-30%;"></div>
     <div class="sky-cloud cloud3" style="left:-25%;"></div>
-
-    <!-- Santa + reindeer -->
-    <div class="santa">
-        <div class="santa-sleigh">
-            <div class="santa-body"></div>
-            <div class="santa-head"></div>
-            <div class="santa-hat"></div>
-        </div>
-        <div class="reindeer">
-            <div class="reindeer-body"></div>
-            <div class="reindeer-nose"></div>
-        </div>
-    </div>
 
     <!-- Ground + trees -->
     <div class="ground">
@@ -637,65 +385,24 @@
             <div class="train-track-container">
                 <div class="train-shadow"></div>
 
+                <!-- IMAGE-BASED TRAIN -->
                 <div id="train" class="train rating-0">
-                    <!-- Engine -->
-                    <div class="engine">
-                        <div class="engine-roof"></div>
-                        <div class="engine-window"></div>
-                        <div class="chimney"></div>
-                        <div class="smoke-stack">
-                            <div class="smoke-cloud one"></div>
-                            <div class="smoke-cloud two"></div>
-                            <div class="smoke-cloud three"></div>
-                        </div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
+                    <!-- This is your actual Christmas train picture -->
+                    <img src="train.png" alt="Christmas train" class="train-image" />
+
+                    <!-- Smoke on chimney -->
+                    <div class="smoke-stack">
+                        <div class="smoke-cloud one"></div>
+                        <div class="smoke-cloud two"></div>
+                        <div class="smoke-cloud three"></div>
                     </div>
 
-                    <!-- Carriages 1–5 -->
-                    <div class="carriage" data-rating="1">
-                        <div class="carriage-window"></div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
-                    </div>
-                    <div class="carriage" data-rating="2">
-                        <div class="carriage-window"></div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
-                    </div>
-                    <div class="carriage" data-rating="3">
-                        <div class="carriage-window"></div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
-                    </div>
-                    <div class="carriage" data-rating="4">
-                        <div class="carriage-window"></div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
-                    </div>
-                    <div class="carriage" data-rating="5">
-                        <div class="carriage-window"></div>
-                        <div class="fairy-lights"></div>
-                        <div class="wheel-row">
-                            <div class="wheel"></div>
-                            <div class="wheel"></div>
-                        </div>
-                    </div>
+                    <!-- Invisible click zones for ratings 1–5 -->
+                    <div class="rating-zone" data-rating="1"></div>
+                    <div class="rating-zone" data-rating="2"></div>
+                    <div class="rating-zone" data-rating="3"></div>
+                    <div class="rating-zone" data-rating="4"></div>
+                    <div class="rating-zone" data-rating="5"></div>
                 </div>
 
                 <div class="track"></div>
@@ -704,8 +411,7 @@
 
         <div class="controls">
             <div class="rating-text">
-                Selected rating:
-                <strong id="selected-rating">None</strong> (out of 5)
+                Selected rating: <strong id="selected-rating">None</strong> (out of 5)
             </div>
             <button id="submit-btn" disabled>Submit Rating</button>
         </div>
@@ -719,7 +425,7 @@
 
     <script>
         const trainEl = document.getElementById("train");
-        const carriages = document.querySelectorAll(".carriage");
+        const ratingZones = document.querySelectorAll(".rating-zone");
         const selectedRatingEl = document.getElementById("selected-rating");
         const submitBtn = document.getElementById("submit-btn");
         const hoverTooltip = document.getElementById("hover-tooltip");
@@ -749,13 +455,11 @@
             selectedRatingEl.textContent = rating;
             submitBtn.disabled = false;
 
-            carriages.forEach(c => {
-                const value = parseInt(c.getAttribute("data-rating"), 10);
-                if (value === rating) c.classList.add("selected");
-                else c.classList.remove("selected");
+            ratingZones.forEach(z => {
+                const value = parseInt(z.getAttribute("data-rating"), 10);
+                if (value === rating) z.classList.add("selected");
+                else z.classList.remove("selected");
             });
-
-            trainEl.className = "train rating-" + rating;
         }
 
         function moveTrainToRating(rating) {
@@ -785,9 +489,9 @@
             trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
         }
 
-        carriages.forEach(c => {
-            c.addEventListener("click", () => {
-                const rating = parseInt(c.getAttribute("data-rating"), 10);
+        ratingZones.forEach(z => {
+            z.addEventListener("click", () => {
+                const rating = parseInt(z.getAttribute("data-rating"), 10);
 
                 if (teaseClickCount < 3) {
                     teaseClickCount += 1;
@@ -809,20 +513,20 @@
                 moveTrainToRating(rating);
             });
 
-            c.addEventListener("mouseenter", (e) => {
-                const rating = parseInt(c.getAttribute("data-rating"), 10);
+            z.addEventListener("mouseenter", (e) => {
+                const rating = parseInt(z.getAttribute("data-rating"), 10);
                 hoverTooltip.textContent = hoverCommentsByRating[rating];
                 hoverTooltip.classList.add("visible");
                 hoverTooltip.style.left = (e.clientX + 12) + "px";
                 hoverTooltip.style.top = (e.clientY - 12) + "px";
             });
 
-            c.addEventListener("mousemove", (e) => {
+            z.addEventListener("mousemove", (e) => {
                 hoverTooltip.style.left = (e.clientX + 12) + "px";
                 hoverTooltip.style.top = (e.clientY - 12) + "px";
             });
 
-            c.addEventListener("mouseleave", () => {
+            z.addEventListener("mouseleave", () => {
                 hoverTooltip.classList.remove("visible");
             });
         });
@@ -837,7 +541,6 @@
             const confirmed = confirm(
                 message + "\n\nClick OK to lock in this rating, or Cancel to reconsider your life choices."
             );
-
             if (!confirmed) return;
 
             alert("Thanks! You successfully gave a " + selectedRating +
@@ -846,4 +549,5 @@
     </script>
 </body>
 </html>
+
 
