@@ -104,6 +104,132 @@
         .bush.b3 { left: 70%; }
         .bush.b4 { left: 85%; bottom: 24px; }
 
+        /* --- CHRISTMAS TREES --- */
+        .tree {
+            position: absolute;
+            bottom: 18px;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid #1f7a3b;
+        }
+
+        .tree::before {
+            content: "";
+            position: absolute;
+            left: -24px;
+            top: -24px;
+            border-left: 24px solid transparent;
+            border-right: 24px solid transparent;
+            border-bottom: 38px solid #24924a;
+        }
+
+        .tree::after {
+            content: "";
+            position: absolute;
+            left: -5px;
+            bottom: -12px;
+            width: 10px;
+            height: 12px;
+            background: #5a3c20;
+            border-radius: 2px;
+        }
+
+        .tree.t1 { left: 6%; }
+        .tree.t2 {
+            left: 82%;
+            transform: scale(0.85);
+        }
+
+        .tree-star {
+            position: absolute;
+            top: -10px;
+            left: -6px;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ffd86b 0%, #f3b136 60%, #c28c1a 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(255, 230, 150, 0.9);
+            animation: twinkle 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* --- ELVES --- */
+        .elf {
+            position: absolute;
+            bottom: 18px;
+            width: 22px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            animation: elf-bounce 1.4s ease-in-out infinite;
+        }
+
+        .elf.e1 { left: 28%; animation-delay: 0s; }
+        .elf.e2 { left: 58%; animation-delay: 0.4s; }
+
+        @keyframes elf-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .elf-body {
+            width: 16px;
+            height: 18px;
+            background: #1fa34a;
+            border-radius: 3px 3px 4px 4px;
+            position: relative;
+        }
+
+        .elf-body::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 3px;
+            width: 10px;
+            height: 3px;
+            background: #3a2b1a;
+            border-radius: 2px;
+        }
+
+        .elf-head {
+            position: absolute;
+            top: -14px;
+            left: 3px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ffd7b3;
+        }
+
+        .elf-hat {
+            position: absolute;
+            top: -21px;
+            left: 1px;
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 12px solid #e63946;
+        }
+
+        .elf-hat::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: -4px;
+            width: 8px;
+            height: 3px;
+            border-radius: 2px;
+            background: #fff;
+        }
+
         .train-wrapper {
             margin: 6px 0 8px;
             position: relative;
@@ -118,6 +244,38 @@
             0%   { transform: translateY(0); }
             50%  { transform: translateY(-2px); }
             100% { transform: translateY(0); }
+        }
+
+        /* --- LIGHTS AROUND THE CARD --- */
+        .train-wrapper::before {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: 18px;
+            border: 2px dashed transparent;
+            pointer-events: none;
+            box-shadow:
+                0 0 0 2px rgba(255, 0, 0, 0.0),
+                0 0 0 2px rgba(255, 215, 0, 0.0);
+            animation: lights-blink 1.4s linear infinite;
+        }
+
+        @keyframes lights-blink {
+            0% {
+                box-shadow:
+                    0 0 0 2px rgba(255, 0, 0, 0.7),
+                    0 0 10px 2px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow:
+                    0 0 0 2px rgba(0, 180, 255, 0.7),
+                    0 0 10px 2px rgba(0, 255, 150, 0.3);
+            }
+            100% {
+                box-shadow:
+                    0 0 0 2px rgba(255, 105, 180, 0.7),
+                    0 0 10px 2px rgba(255, 255, 255, 0.3);
+            }
         }
 
         .train-track-container {
@@ -428,12 +586,32 @@
     <div class="sky-cloud cloud2" style="left:-30%;"></div>
     <div class="sky-cloud cloud3" style="left:-25%;"></div>
 
-    <!-- Ground + bushes -->
+    <!-- Ground + bushes + trees + elves -->
     <div class="ground">
         <div class="bush b1"></div>
         <div class="bush b2"></div>
         <div class="bush b3"></div>
         <div class="bush b4"></div>
+
+        <!-- Christmas trees -->
+        <div class="tree t1">
+            <div class="tree-star"></div>
+        </div>
+        <div class="tree t2">
+            <div class="tree-star"></div>
+        </div>
+
+        <!-- Elves -->
+        <div class="elf e1">
+            <div class="elf-body"></div>
+            <div class="elf-head"></div>
+            <div class="elf-hat"></div>
+        </div>
+        <div class="elf e2">
+            <div class="elf-body"></div>
+            <div class="elf-head"></div>
+            <div class="elf-hat"></div>
+        </div>
     </div>
 
     <div class="widget-root">
@@ -657,5 +835,6 @@
     </script>
 </body>
 </html>
+
 
 
