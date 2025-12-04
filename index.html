@@ -95,38 +95,42 @@
         }
 
         /* Garland of lights across top */
-        .top-lights {
-            position: fixed;
-            top: 4px;
-            left: 0;
-            right: 0;
-            height: 26px;
-            pointer-events: none;
-            z-index: 2;
-        }
-        .top-lights::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 8px;
-            height: 2px;
-            background: #3a4b63;
-        }
-        .top-lights::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
-                radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
-                radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
-                radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
-            background-size: 22px 22px;
-            background-position: 0 4px, 6px 8px, 12px 4px, 18px 8px;
-            background-repeat: repeat-x;
-            animation: garland-blink 1.5s linear infinite;
-        }
+.top-lights {
+    position: fixed;
+    top: 0;            /* hug very top of iframe */
+    left: 0;
+    right: 0;
+    height: 16px;      /* shorter so it doesn’t overlap the title */
+    pointer-events: none;
+    z-index: 2;
+}
+
+.top-lights::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 6px;          /* thin wire just under the bulbs */
+    height: 1.5px;
+    background: #3a4b63;
+    opacity: 0.9;
+}
+
+.top-lights::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* smaller bulbs */
+    background-image:
+        radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
+        radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
+        radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
+        radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
+    background-size: 16px 16px;
+    background-position: 0 2px, 4px 4px, 8px 2px, 12px 4px;
+    background-repeat: repeat-x;
+    animation: garland-blink 1.5s linear infinite;
+}
         @keyframes garland-blink {
             0%   { opacity: 0.5; transform: translateY(0); }
             50%  { opacity: 1;   transform: translateY(1px); }
