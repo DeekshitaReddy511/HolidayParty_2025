@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rate Your Train Ride</title>
+    <title>Rate Your Holiday Ride</title>
     <style>
         body {
             margin: 0;
@@ -97,10 +97,10 @@
         /* Garland of lights across top */
 .top-lights {
     position: fixed;
-    top: 0;            /* hug very top of iframe */
+    top: -12px;            /* hug very top of iframe */
     left: 0;
     right: 0;
-    height: 16px;      /* shorter so it doesn’t overlap the title */
+    height: 12px;      /* shorter so it doesn’t overlap the title */
     pointer-events: none;
     z-index: 2;
 }
@@ -110,10 +110,10 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 6px;          /* thin wire just under the bulbs */
+    top: 10px;          /* thin wire just under the bulbs */
     height: 1.5px;
     background: #3a4b63;
-    opacity: 0.9;
+    opacity: 0.8;
 }
 
 .top-lights::after {
@@ -126,8 +126,8 @@
         radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
         radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
         radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
-    background-size: 16px 16px;
-    background-position: 0 2px, 4px 4px, 8px 2px, 12px 4px;
+    background-size: 14px 14px;
+    background-position: 0 6px, 4px 6px, 8px 6px, 12px 6px;
     background-repeat: repeat-x;
     animation: garland-blink 1.5s linear infinite;
 }
@@ -826,7 +826,7 @@
     <div class="widget-root">
         <h1>Rate Your Train Ride</h1>
         <div class="subtitle">
-            Move your mouse over the train and click a carriage (1–5).<br />
+            Move your mouse over the train and click a sleighs (1–5).<br />
             The sky is calm. The train is not.
         </div>
 
