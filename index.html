@@ -87,7 +87,7 @@
             opacity: 0.6;
             mix-blend-mode: screen;
             animation: snow-fall 7s linear infinite;
-            z-index: -0;
+            z-index: 0;
         }
         @keyframes snow-fall {
             0%   { background-position: 0 -40px, 10px -80px; }
@@ -95,42 +95,39 @@
         }
 
         /* Garland of lights across top */
-.top-lights {
-    position: fixed;
-    top: -12px;            /* hug very top of iframe */
-    left: 0;
-    right: 0;
-    height: 12px;      /* shorter so it doesn’t overlap the title */
-    pointer-events: none;
-    z-index: 2;
-}
-
-.top-lights::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 10px;          /* thin wire just under the bulbs */
-    height: 1.5px;
-    background: #3a4b63;
-    opacity: 0.8;
-}
-
-.top-lights::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    /* smaller bulbs */
-    background-image:
-        radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
-        radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
-        radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
-        radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
-    background-size: 14px 14px;
-    background-position: 0 6px, 4px 6px, 8px 6px, 12px 6px;
-    background-repeat: repeat-x;
-    animation: garland-blink 1.5s linear infinite;
-}
+        .top-lights {
+            position: fixed;
+            top: -12px;            /* fully above title */
+            left: 0;
+            right: 0;
+            height: 12px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .top-lights::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 10px;
+            height: 1.5px;
+            background: #3a4b63;
+            opacity: 0.8;
+        }
+        .top-lights::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, #ff4b4b 0 55%, transparent 60%),
+                radial-gradient(circle, #ffd93b 0 55%, transparent 60%),
+                radial-gradient(circle, #4be1ff 0 55%, transparent 60%),
+                radial-gradient(circle, #9b5de5 0 55%, transparent 60%);
+            background-size: 14px 14px;
+            background-position: 0 6px, 4px 6px, 8px 6px, 12px 6px;
+            background-repeat: repeat-x;
+            animation: garland-blink 1.5s linear infinite;
+        }
         @keyframes garland-blink {
             0%   { opacity: 0.5; transform: translateY(0); }
             50%  { opacity: 1;   transform: translateY(1px); }
@@ -435,7 +432,7 @@
             pointer-events: none;
         }
 
-        /* Engine (unchanged) */
+        /* Engine */
         .engine,
         .carriage {
             position: relative;
@@ -772,6 +769,60 @@
             opacity: 1;
             transform: translateY(-8px);
         }
+
+        /* === ROBOT CHECK + GIFT CAPTCHA === */
+        .robot-row {
+            font-size: 11px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .robot-row input[type="checkbox"] {
+            transform: scale(0.9);
+            cursor: pointer;
+        }
+
+        .captcha-panel {
+            margin-top: 4px;
+            padding: 6px 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            font-size: 10px;
+            text-align: center;
+        }
+        .captcha-title {
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+        .captcha-grid {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .captcha-tile {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+        }
+        .captcha-tile.selected {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-color: #2ecc71;
+        }
+        .captcha-message {
+            min-height: 14px;
+        }
     </style>
 </head>
 <body>
@@ -826,7 +877,7 @@
     <div class="widget-root">
         <h1>Rate Your Holiday Ride</h1>
         <div class="subtitle">
-            Move your mouse over the train and click a sleighs (1–5).<br />
+            Move your mouse over the train and click a sleigh (1–5).<br />
             The sky is calm. The train is not.
         </div>
 
@@ -835,7 +886,7 @@
                 <div class="train-shadow"></div>
 
                 <div id="train" class="train rating-0">
-                    <!-- Engine (unchanged) -->
+                    <!-- Engine -->
                     <div class="engine">
                         <div class="engine-roof"></div>
                         <div class="engine-window"></div>
@@ -909,6 +960,32 @@
                 Selected rating:
                 <strong id="selected-rating">None</strong> (out of 5)
             </div>
+
+            <!-- I'm not a robot -->
+            <div class="robot-row">
+                <input type="checkbox" id="robot-checkbox" />
+                <label for="robot-checkbox">
+                    I'm not a robot (just a very serious holiday critic).
+                </label>
+            </div>
+
+            <!-- Gift selection captcha -->
+            <div class="captcha-panel">
+                <div class="captcha-title">Select all gifts to verify:</div>
+                <div class="captcha-grid">
+                    <!-- 4 gifts, 2 impostors -->
+                    <button class="captcha-tile" data-type="gift">🎁</button>
+                    <button class="captcha-tile" data-type="gift">🎁</button>
+                    <button class="captcha-tile" data-type="not-gift">⛄</button>
+                    <button class="captcha-tile" data-type="gift">🎁</button>
+                    <button class="captcha-tile" data-type="not-gift">🎄</button>
+                    <button class="captcha-tile" data-type="gift">🎁</button>
+                </div>
+                <div class="captcha-message" id="captcha-message">
+                    Tip: click only the presents, not the snowmen or trees.
+                </div>
+            </div>
+
             <button id="submit-btn" disabled>Submit Rating</button>
         </div>
 
@@ -926,9 +1003,14 @@
         const submitBtn = document.getElementById("submit-btn");
         const hoverTooltip = document.getElementById("hover-tooltip");
 
+        const robotCheckbox = document.getElementById("robot-checkbox");
+        const captchaTiles = document.querySelectorAll(".captcha-tile");
+        const captchaMessage = document.getElementById("captcha-message");
+
         let selectedRating = null;
         let teaseClickCount = 0;
         let currentOffsetX = 0;
+        let captchaSolved = false;
 
         const commentsByRating = {
             1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
@@ -1029,9 +1111,45 @@
             });
         });
 
+        /* Gift captcha logic */
+        function evaluateCaptcha() {
+            const tiles = Array.from(captchaTiles);
+            const allGiftsSelected = tiles
+                .filter(t => t.dataset.type === "gift")
+                .every(t => t.classList.contains("selected"));
+            const anyWrongSelected = tiles
+                .filter(t => t.dataset.type !== "gift")
+                .some(t => t.classList.contains("selected"));
+
+            if (allGiftsSelected && !anyWrongSelected) {
+                captchaSolved = true;
+                captchaMessage.textContent = "Nice work! Santa approves. ✅";
+            } else {
+                captchaSolved = false;
+                captchaMessage.textContent = "Tip: click only the presents, not the snowmen or trees.";
+            }
+        }
+
+        captchaTiles.forEach(tile => {
+            tile.addEventListener("click", () => {
+                tile.classList.toggle("selected");
+                evaluateCaptcha();
+            });
+        });
+
         submitBtn.addEventListener("click", () => {
             if (!selectedRating) {
                 alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
+                return;
+            }
+
+            if (!robotCheckbox.checked) {
+                alert("Please confirm you're not a robot. The elves are very suspicious.");
+                return;
+            }
+
+            if (!captchaSolved) {
+                alert("Please complete the gift selection to prove you're a real human (or at least a festive one).");
                 return;
             }
 
