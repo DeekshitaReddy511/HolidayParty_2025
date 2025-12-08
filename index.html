@@ -97,7 +97,7 @@
         /* Garland of lights across top */
         .top-lights {
             position: fixed;
-            top: -12px;            /* fully above title */
+            top: -12px; /* fully above title */
             left: 0;
             right: 0;
             height: 12px;
@@ -829,7 +829,7 @@
             color: #555;
         }
 
-        /* === POPUP BACKDROP + CARD (shared for both modals) === */
+        /* === POPUP BACKDROP + CARD (shared for modals) === */
         .captcha-backdrop {
             position: fixed;
             inset: 0;
@@ -934,6 +934,50 @@
             font-size: 10px;
             box-shadow: none;
         }
+
+        /* === CHRISTMAS PUZZLE MODAL === */
+        .puzzle-body {
+            padding-top: 6px;
+            border-top: 1px solid #eee;
+        }
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin: 6px 0;
+            justify-items: center;
+        }
+        .puzzle-tile {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+        }
+        .puzzle-tile.on {
+            border-color: #2ecc71;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .puzzle-status {
+            min-height: 14px;
+            font-size: 11px;
+        }
+        .puzzle-actions {
+            margin-top: 4px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .puzzle-actions button {
+            padding: 4px 10px;
+            font-size: 10px;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -988,7 +1032,7 @@
     <div class="widget-root">
         <h1>Rate Your Holiday Ride</h1>
         <div class="subtitle">
-            If you have Been NICE! then Move your mouse over the train and click a sleigh (1–5).<br />
+            Move your mouse over the train and click a sleigh (1–5).<br />
             The sky is calm. The train is not.
         </div>
 
@@ -1139,6 +1183,35 @@
         </div>
     </div>
 
+    <!-- CHRISTMAS PUZZLE MODAL -->
+    <div id="puzzle-modal" class="captcha-backdrop">
+        <div class="captcha-card">
+            <div class="captcha-title">Holiday Tile Puzzle</div>
+            <div class="puzzle-body">
+                <div class="puzzle-status" id="puzzle-status">
+                    Turn every tile into a 🎄 to unlock the train.
+                </div>
+                <div class="puzzle-grid">
+                    <!-- 9 tiles -->
+                    <button class="puzzle-tile" data-state="gift">🎁</button>
+                    <button class="puzzle-tile" data-state="tree">🎄</button>
+                    <button class="puzzle-tile" data-state="gift">🎁</button>
+
+                    <button class="puzzle-tile" data-state="tree">🎄</button>
+                    <button class="puzzle-tile" data-state="gift">🎁</button>
+                    <button class="puzzle-tile" data-state="tree">🎄</button>
+
+                    <button class="puzzle-tile" data-state="gift">🎁</button>
+                    <button class="puzzle-tile" data-state="tree">🎄</button>
+                    <button class="puzzle-tile" data-state="gift">🎁</button>
+                </div>
+                <div class="puzzle-actions">
+                    <button id="puzzle-check-btn">Check tiles</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const trainEl = document.getElementById("train");
         const carriages = document.querySelectorAll(".carriage");
@@ -1156,6 +1229,11 @@
         const warmupBtn = document.getElementById("warmup-btn");
         const warmupStatus = document.getElementById("warmup-status");
 
+        const puzzleModal = document.getElementById("puzzle-modal");
+        const puzzleTiles = document.querySelectorAll(".puzzle-tile");
+        const puzzleStatus = document.getElementById("puzzle-status");
+        const puzzleCheckBtn = document.getElementById("puzzle-check-btn");
+
         const nnSlider = document.getElementById("nn-slider");
         const nnStatus = document.getElementById("nn-status");
 
@@ -1168,6 +1246,8 @@
         let nnNiceReached = false;  // has user ever slid into Nice zone
         let warmupClicks = 0;
         let engineWarmed = false;
+
+        let puzzleSolved = false;
 
         const commentsByRating = {
             1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
@@ -1242,6 +1322,15 @@
             warmupModal.classList.remove("visible");
         }
 
+        function showPuzzleModal() {
+            if (puzzleSolved) return;
+            puzzleModal.classList.add("visible");
+        }
+
+        function hidePuzzleModal() {
+            puzzleModal.classList.remove("visible");
+        }
+
         function evaluateCaptcha() {
             const tiles = Array.from(captchaTiles);
             const allGiftsSelected = tiles
@@ -1295,12 +1384,61 @@
                     warmupStatus.textContent = "Engine ready! Steam pressure optimal. ✅";
                     setTimeout(() => {
                         hideWarmupModal();
-                        if (nnSlider.value >= 80) {
-                            trainUnlocked = true;
-                            nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
-                        }
+                        showPuzzleModal();
                     }, 600);
                 }
+            });
+        }
+
+        // Puzzle logic
+        function updatePuzzleTile(tile) {
+            const current = tile.dataset.state;
+            if (current === "tree") {
+                tile.dataset.state = "gift";
+                tile.textContent = "🎁";
+                tile.classList.remove("on");
+            } else {
+                tile.dataset.state = "tree";
+                tile.textContent = "🎄";
+                tile.classList.add("on");
+            }
+        }
+
+        puzzleTiles.forEach(tile => {
+            // initial visual state from data-state
+            if (tile.dataset.state === "tree") {
+                tile.textContent = "🎄";
+                tile.classList.add("on");
+            } else {
+                tile.textContent = "🎁";
+                tile.classList.remove("on");
+            }
+
+            tile.addEventListener("click", () => {
+                updatePuzzleTile(tile);
+            });
+        });
+
+        function checkPuzzleSolved() {
+            const allTree = Array.from(puzzleTiles).every(t => t.dataset.state === "tree");
+            if (allTree) {
+                puzzleSolved = true;
+                puzzleStatus.textContent = "Puzzle solved! The forest is fully festive. ✅";
+                setTimeout(() => {
+                    hidePuzzleModal();
+                    if (nnSlider.value >= 80 && engineWarmed && puzzleSolved) {
+                        trainUnlocked = true;
+                        nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
+                    }
+                }, 700);
+            } else {
+                puzzleStatus.textContent = "Not yet! Make every tile a 🎄.";
+            }
+        }
+
+        if (puzzleCheckBtn) {
+            puzzleCheckBtn.addEventListener("click", () => {
+                checkPuzzleSolved();
             });
         }
 
@@ -1315,11 +1453,15 @@
                         nnStatus.textContent = "Nice! Now warm up the engine to unlock the train.";
                         showWarmupModal();
                     } else {
-                        if (engineWarmed) {
+                        if (!engineWarmed) {
+                            nnStatus.textContent = "Engine is still cold. Warm it up in the popup.";
+                            showWarmupModal();
+                        } else if (!puzzleSolved) {
+                            nnStatus.textContent = "Engine ready. Solve the holiday puzzle to unlock the train.";
+                            showPuzzleModal();
+                        } else {
                             trainUnlocked = true;
                             nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
-                        } else {
-                            nnStatus.textContent = "Nice! Now warm up the engine to unlock the train.";
                         }
                     }
                 } else {
@@ -1331,18 +1473,20 @@
 
         carriages.forEach(c => {
             c.addEventListener("click", () => {
-                // Block rating until slider is on "Nice" AND engine warmed
+                // Block rating until slider is on "Nice", engine warmed AND puzzle solved
                 if (!trainUnlocked) {
                     const rect = trainEl.getBoundingClientRect();
                     let msg = "The train only moves for Nice people. Slide the Naughty–Nice bar first.";
                     if (nnNiceReached && !engineWarmed) {
                         msg = "Engine is still cold. Warm it up in the popup first.";
+                    } else if (engineWarmed && !puzzleSolved) {
+                        msg = "Puzzle pending. Solve the holiday tiles to unlock the train.";
                     }
                     hoverTooltip.textContent = msg;
                     hoverTooltip.classList.add("visible");
                     hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
                     hoverTooltip.style.top = rect.top - 20 + "px";
-                    setTimeout(() => hoverTooltip.classList.remove("visible"), 1000);
+                    setTimeout(() => hoverTooltip.classList.remove("visible"), 1100);
                     return;
                 }
 
