@@ -432,7 +432,7 @@
             pointer-events: none;
         }
 
-        /* Engine & carriages (unchanged visuals) */
+        /* Engine & carriages */
         .engine,
         .carriage {
             position: relative;
@@ -770,6 +770,65 @@
             transform: translateY(-8px);
         }
 
+        /* === NAUGHTY / NICE SLIDER GATE === */
+        .naughty-nice-gate {
+            margin: 4px 0 8px;
+            font-size: 11px;
+            color: #444;
+        }
+        .naughty-nice-gate .nn-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .naughty-nice-gate .nn-label-row span {
+            flex: 1;
+        }
+        .naughty-nice-gate .nn-label-row span:last-child {
+            text-align: right;
+        }
+        .nn-slider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+        .naughty-nice-gate input[type="range"] {
+            width: 80%;
+            -webkit-appearance: none;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #c0392b, #f1c40f, #2ecc71);
+            outline: none;
+        }
+        .naughty-nice-gate input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #2c3e50;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .naughty-nice-gate input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #2c3e50;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .nn-status {
+            text-align: center;
+            font-size: 11px;
+            color: #555;
+        }
+
         /* === POPUP ROBOT CHECK + GIFT CAPTCHA === */
         .captcha-backdrop {
             position: fixed;
@@ -913,6 +972,20 @@
             The sky is calm. The train is not.
         </div>
 
+        <!-- Naughty / Nice gate -->
+        <div class="naughty-nice-gate">
+            <div class="nn-label-row">
+                <span>❄️ Naughty</span>
+                <span>Nice ⭐</span>
+            </div>
+            <div class="nn-slider">
+                <input type="range" id="nn-slider" min="0" max="100" value="20" />
+            </div>
+            <div class="nn-status" id="nn-status">
+                Slide to “Nice” to unlock the train.
+            </div>
+        </div>
+
         <div class="train-wrapper">
             <div class="train-track-container">
                 <div class="train-shadow"></div>
@@ -1044,11 +1117,14 @@
         const captchaMessage = document.getElementById("captcha-message");
         const captchaDoneBtn = document.getElementById("captcha-done-btn");
 
+        const nnSlider = document.getElementById("nn-slider");
+        const nnStatus = document.getElementById("nn-status");
+
         let selectedRating = null;
         let teaseClickCount = 0;
         let currentOffsetX = 0;
         let captchaSolved = false;
-        let captchaShownOnce = false;
+        let trainUnlocked = false;
 
         const commentsByRating = {
             1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
@@ -1109,7 +1185,6 @@
 
         function showCaptcha() {
             captchaModal.classList.add("visible");
-            captchaShownOnce = true;
         }
 
         function hideCaptcha() {
@@ -1150,15 +1225,39 @@
             }
 
             if (!captchaSolved) {
-                // message already updated by evaluateCaptcha
                 return;
             }
 
             hideCaptcha();
         });
 
+        // Naughty / Nice slider logic
+        if (nnSlider) {
+            nnSlider.addEventListener("input", () => {
+                const v = parseInt(nnSlider.value, 10) || 0;
+                if (v >= 80) {
+                    trainUnlocked = true;
+                    nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
+                } else {
+                    trainUnlocked = false;
+                    nnStatus.textContent = "Slide to “Nice” to unlock the train.";
+                }
+            });
+        }
+
         carriages.forEach(c => {
             c.addEventListener("click", () => {
+                // Block rating until slider is on "Nice"
+                if (!trainUnlocked) {
+                    const rect = trainEl.getBoundingClientRect();
+                    hoverTooltip.textContent = "The train only moves for Nice people. Slide the Naughty–Nice bar first.";
+                    hoverTooltip.classList.add("visible");
+                    hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
+                    hoverTooltip.style.top = rect.top - 20 + "px";
+                    setTimeout(() => hoverTooltip.classList.remove("visible"), 1000);
+                    return;
+                }
+
                 const rating = parseInt(c.getAttribute("data-rating"), 10);
 
                 if (teaseClickCount < 3) {
@@ -1181,7 +1280,7 @@
                 updateSelection(rating);
                 moveTrainToRating(rating);
 
-                // After first successful rating selection, show captcha popup
+                // After first successful rating selection, show captcha popup if not solved
                 if (!captchaSolved) {
                     showCaptcha();
                 }
@@ -1212,7 +1311,6 @@
             }
 
             if (!captchaSolved) {
-                // Show the popup if not already solved
                 showCaptcha();
                 return;
             }
