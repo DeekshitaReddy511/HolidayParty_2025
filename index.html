@@ -829,7 +829,7 @@
             color: #555;
         }
 
-        /* === POPUP ROBOT CHECK + GIFT CAPTCHA === */
+        /* === POPUP BACKDROP + CARD (shared for both modals) === */
         .captcha-backdrop {
             position: fixed;
             inset: 0;
@@ -855,6 +855,8 @@
             padding: 10px 12px 10px;
             font-size: 11px;
         }
+
+        /* === ROBOT CHECK + GIFT CAPTCHA === */
         .captcha-header {
             display: flex;
             align-items: center;
@@ -914,6 +916,24 @@
             font-size: 10px;
             box-shadow: none;
         }
+
+        /* === WARMUP MODAL SPECIFIC === */
+        .warmup-body {
+            padding-top: 6px;
+            border-top: 1px solid #eee;
+        }
+        .warmup-status {
+            margin-bottom: 6px;
+        }
+        .warmup-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .warmup-actions button {
+            padding: 4px 10px;
+            font-size: 10px;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -968,7 +988,7 @@
     <div class="widget-root">
         <h1>Rate Your Holiday Ride</h1>
         <div class="subtitle">
-            If you have Been Nice! then Move your mouse over the train and click a sleigh (1–5).<br />
+            Move your mouse over the train and click a sleigh (1–5).<br />
             The sky is calm. The train is not.
         </div>
 
@@ -1076,7 +1096,7 @@
     <!-- Hover tooltip -->
     <div id="hover-tooltip"></div>
 
-    <!-- POPUP CAPTCHA -->
+    <!-- ROBOT / GIFTS CAPTCHA MODAL -->
     <div id="captcha-modal" class="captcha-backdrop">
         <div class="captcha-card">
             <div class="captcha-header">
@@ -1104,6 +1124,21 @@
         </div>
     </div>
 
+    <!-- WARM UP ENGINE MODAL -->
+    <div id="warmup-modal" class="captcha-backdrop">
+        <div class="captcha-card">
+            <div class="captcha-title">Warm up the engine</div>
+            <div class="warmup-body">
+                <div class="warmup-status" id="warmup-status">
+                    Click “Stoke the boiler” 5 times to build steam.
+                </div>
+                <div class="warmup-actions">
+                    <button id="warmup-btn">Stoke the boiler 🔥</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const trainEl = document.getElementById("train");
         const carriages = document.querySelectorAll(".carriage");
@@ -1117,6 +1152,10 @@
         const captchaMessage = document.getElementById("captcha-message");
         const captchaDoneBtn = document.getElementById("captcha-done-btn");
 
+        const warmupModal = document.getElementById("warmup-modal");
+        const warmupBtn = document.getElementById("warmup-btn");
+        const warmupStatus = document.getElementById("warmup-status");
+
         const nnSlider = document.getElementById("nn-slider");
         const nnStatus = document.getElementById("nn-status");
 
@@ -1125,6 +1164,10 @@
         let currentOffsetX = 0;
         let captchaSolved = false;
         let trainUnlocked = false;
+
+        let nnNiceReached = false;  // has user ever slid into Nice zone
+        let warmupClicks = 0;
+        let engineWarmed = false;
 
         const commentsByRating = {
             1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
@@ -1191,6 +1234,14 @@
             captchaModal.classList.remove("visible");
         }
 
+        function showWarmupModal() {
+            warmupModal.classList.add("visible");
+        }
+
+        function hideWarmupModal() {
+            warmupModal.classList.remove("visible");
+        }
+
         function evaluateCaptcha() {
             const tiles = Array.from(captchaTiles);
             const allGiftsSelected = tiles
@@ -1231,13 +1282,46 @@
             hideCaptcha();
         });
 
+        // Warmup logic
+        if (warmupBtn) {
+            warmupBtn.addEventListener("click", () => {
+                if (engineWarmed) return;
+
+                warmupClicks += 1;
+                if (warmupClicks < 5) {
+                    warmupStatus.textContent = `Engine warmth: ${warmupClicks}/5 🔥`;
+                } else {
+                    engineWarmed = true;
+                    warmupStatus.textContent = "Engine ready! Steam pressure optimal. ✅";
+                    setTimeout(() => {
+                        hideWarmupModal();
+                        if (nnSlider.value >= 80) {
+                            trainUnlocked = true;
+                            nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
+                        }
+                    }, 600);
+                }
+            });
+        }
+
         // Naughty / Nice slider logic
         if (nnSlider) {
             nnSlider.addEventListener("input", () => {
                 const v = parseInt(nnSlider.value, 10) || 0;
+
                 if (v >= 80) {
-                    trainUnlocked = true;
-                    nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
+                    if (!nnNiceReached) {
+                        nnNiceReached = true;
+                        nnStatus.textContent = "Nice! Now warm up the engine to unlock the train.";
+                        showWarmupModal();
+                    } else {
+                        if (engineWarmed) {
+                            trainUnlocked = true;
+                            nnStatus.textContent = "Nice! The Holiday Express is unlocked.";
+                        } else {
+                            nnStatus.textContent = "Nice! Now warm up the engine to unlock the train.";
+                        }
+                    }
                 } else {
                     trainUnlocked = false;
                     nnStatus.textContent = "Slide to “Nice” to unlock the train.";
@@ -1247,10 +1331,14 @@
 
         carriages.forEach(c => {
             c.addEventListener("click", () => {
-                // Block rating until slider is on "Nice"
+                // Block rating until slider is on "Nice" AND engine warmed
                 if (!trainUnlocked) {
                     const rect = trainEl.getBoundingClientRect();
-                    hoverTooltip.textContent = "The train only moves for Nice people. Slide the Naughty–Nice bar first.";
+                    let msg = "The train only moves for Nice people. Slide the Naughty–Nice bar first.";
+                    if (nnNiceReached && !engineWarmed) {
+                        msg = "Engine is still cold. Warm it up in the popup first.";
+                    }
+                    hoverTooltip.textContent = msg;
                     hoverTooltip.classList.add("visible");
                     hoverTooltip.style.left = rect.left + rect.width / 2 + "px";
                     hoverTooltip.style.top = rect.top - 20 + "px";
