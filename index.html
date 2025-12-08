@@ -134,7 +134,7 @@
             100% { opacity: 0.5; transform: translateY(0); }
         }
 
-        /* === SANTA FLYOVER (festive) === */
+        /* === SANTA FLYOVER === */
         .santa {
             position: fixed;
             top: 11%;
@@ -432,7 +432,7 @@
             pointer-events: none;
         }
 
-        /* Engine */
+        /* Engine & carriages (unchanged visuals) */
         .engine,
         .carriage {
             position: relative;
@@ -770,34 +770,56 @@
             transform: translateY(-8px);
         }
 
-        /* === ROBOT CHECK + GIFT CAPTCHA === */
-        .robot-row {
+        /* === POPUP ROBOT CHECK + GIFT CAPTCHA === */
+        .captcha-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 900;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+        }
+        .captcha-backdrop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .captcha-card {
+            width: 260px;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            padding: 10px 12px 10px;
             font-size: 11px;
-            color: #444;
+        }
+        .captcha-header {
             display: flex;
             align-items: center;
             gap: 6px;
+            margin-bottom: 6px;
         }
-        .robot-row input[type="checkbox"] {
-            transform: scale(0.9);
+        .captcha-header input[type="checkbox"] {
+            cursor: pointer;
+            transform: scale(0.95);
+        }
+        .captcha-header label {
             cursor: pointer;
         }
-
-        .captcha-panel {
-            margin-top: 4px;
-            padding: 6px 8px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.9);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            font-size: 10px;
-            text-align: center;
+        .captcha-body {
+            border-top: 1px solid #eee;
+            padding-top: 6px;
         }
         .captcha-title {
-            margin-bottom: 4px;
             font-weight: bold;
+            margin-bottom: 4px;
         }
         .captcha-grid {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 4px;
             margin-bottom: 4px;
@@ -822,6 +844,16 @@
         }
         .captcha-message {
             min-height: 14px;
+        }
+        .captcha-actions {
+            margin-top: 4px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .captcha-actions button {
+            padding: 4px 10px;
+            font-size: 10px;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -960,17 +992,25 @@
                 Selected rating:
                 <strong id="selected-rating">None</strong> (out of 5)
             </div>
+            <button id="submit-btn" disabled>Submit Rating</button>
+        </div>
 
-            <!-- I'm not a robot -->
-            <div class="robot-row">
+        <div class="debug-note">
+            Warning: side effects may include guilt, laughter, and sudden empathy for trains.
+        </div>
+    </div>
+
+    <!-- Hover tooltip -->
+    <div id="hover-tooltip"></div>
+
+    <!-- POPUP CAPTCHA -->
+    <div id="captcha-modal" class="captcha-backdrop">
+        <div class="captcha-card">
+            <div class="captcha-header">
                 <input type="checkbox" id="robot-checkbox" />
-                <label for="robot-checkbox">
-                    I'm not a robot (just a very serious holiday critic).
-                </label>
+                <label for="robot-checkbox">I'm not a robot</label>
             </div>
-
-            <!-- Gift selection captcha -->
-            <div class="captcha-panel">
+            <div class="captcha-body">
                 <div class="captcha-title">Select all gifts to verify:</div>
                 <div class="captcha-grid">
                     <!-- 4 gifts, 2 impostors -->
@@ -982,19 +1022,14 @@
                     <button class="captcha-tile" data-type="gift">🎁</button>
                 </div>
                 <div class="captcha-message" id="captcha-message">
-                    Tip: click only the presents, not the snowmen or trees.
+                    Tip: only click the presents, not the snowmen or trees.
+                </div>
+                <div class="captcha-actions">
+                    <button id="captcha-done-btn">Done</button>
                 </div>
             </div>
-
-            <button id="submit-btn" disabled>Submit Rating</button>
-        </div>
-
-        <div class="debug-note">
-            Warning: side effects may include guilt, laughter, and sudden empathy for trains.
         </div>
     </div>
-
-    <div id="hover-tooltip"></div>
 
     <script>
         const trainEl = document.getElementById("train");
@@ -1003,14 +1038,17 @@
         const submitBtn = document.getElementById("submit-btn");
         const hoverTooltip = document.getElementById("hover-tooltip");
 
+        const captchaModal = document.getElementById("captcha-modal");
         const robotCheckbox = document.getElementById("robot-checkbox");
         const captchaTiles = document.querySelectorAll(".captcha-tile");
         const captchaMessage = document.getElementById("captcha-message");
+        const captchaDoneBtn = document.getElementById("captcha-done-btn");
 
         let selectedRating = null;
         let teaseClickCount = 0;
         let currentOffsetX = 0;
         let captchaSolved = false;
+        let captchaShownOnce = false;
 
         const commentsByRating = {
             1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
@@ -1069,6 +1107,56 @@
             trainEl.style.transform = `translate(${currentOffsetX}px, ${y}px) rotate(${angle}deg)`;
         }
 
+        function showCaptcha() {
+            captchaModal.classList.add("visible");
+            captchaShownOnce = true;
+        }
+
+        function hideCaptcha() {
+            captchaModal.classList.remove("visible");
+        }
+
+        function evaluateCaptcha() {
+            const tiles = Array.from(captchaTiles);
+            const allGiftsSelected = tiles
+                .filter(t => t.dataset.type === "gift")
+                .every(t => t.classList.contains("selected"));
+            const anyWrongSelected = tiles
+                .filter(t => t.dataset.type !== "gift")
+                .some(t => t.classList.contains("selected"));
+
+            if (allGiftsSelected && !anyWrongSelected) {
+                captchaSolved = true;
+                captchaMessage.textContent = "Nice! Santa believes you. ✅";
+            } else {
+                captchaSolved = false;
+                captchaMessage.textContent = "Tip: only click the presents, not the snowmen or trees.";
+            }
+        }
+
+        captchaTiles.forEach(tile => {
+            tile.addEventListener("click", () => {
+                tile.classList.toggle("selected");
+                evaluateCaptcha();
+            });
+        });
+
+        captchaDoneBtn.addEventListener("click", () => {
+            evaluateCaptcha();
+
+            if (!robotCheckbox.checked) {
+                captchaMessage.textContent = "Please tick “I'm not a robot” first.";
+                return;
+            }
+
+            if (!captchaSolved) {
+                // message already updated by evaluateCaptcha
+                return;
+            }
+
+            hideCaptcha();
+        });
+
         carriages.forEach(c => {
             c.addEventListener("click", () => {
                 const rating = parseInt(c.getAttribute("data-rating"), 10);
@@ -1088,9 +1176,15 @@
                     return;
                 }
 
+                // 4th click: accept rating
                 teaseClickCount = 0;
                 updateSelection(rating);
                 moveTrainToRating(rating);
+
+                // After first successful rating selection, show captcha popup
+                if (!captchaSolved) {
+                    showCaptcha();
+                }
             });
 
             c.addEventListener("mouseenter", (e) => {
@@ -1111,45 +1205,15 @@
             });
         });
 
-        /* Gift captcha logic */
-        function evaluateCaptcha() {
-            const tiles = Array.from(captchaTiles);
-            const allGiftsSelected = tiles
-                .filter(t => t.dataset.type === "gift")
-                .every(t => t.classList.contains("selected"));
-            const anyWrongSelected = tiles
-                .filter(t => t.dataset.type !== "gift")
-                .some(t => t.classList.contains("selected"));
-
-            if (allGiftsSelected && !anyWrongSelected) {
-                captchaSolved = true;
-                captchaMessage.textContent = "Nice work! Santa approves. ✅";
-            } else {
-                captchaSolved = false;
-                captchaMessage.textContent = "Tip: click only the presents, not the snowmen or trees.";
-            }
-        }
-
-        captchaTiles.forEach(tile => {
-            tile.addEventListener("click", () => {
-                tile.classList.toggle("selected");
-                evaluateCaptcha();
-            });
-        });
-
         submitBtn.addEventListener("click", () => {
             if (!selectedRating) {
                 alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
                 return;
             }
 
-            if (!robotCheckbox.checked) {
-                alert("Please confirm you're not a robot. The elves are very suspicious.");
-                return;
-            }
-
             if (!captchaSolved) {
-                alert("Please complete the gift selection to prove you're a real human (or at least a festive one).");
+                // Show the popup if not already solved
+                showCaptcha();
                 return;
             }
 
