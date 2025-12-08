@@ -1130,6 +1130,9 @@
                 <strong id="selected-rating">None</strong> (out of 5)
             </div>
             <button id="submit-btn" disabled>Submit Rating</button>
+            <button id="reset-btn" style="background: linear-gradient(135deg,#6c757d,#adb5bd);">
+                Reset for next passenger
+            </button>
         </div>
 
         <div class="debug-note">
@@ -1217,6 +1220,7 @@
         const carriages = document.querySelectorAll(".carriage");
         const selectedRatingEl = document.getElementById("selected-rating");
         const submitBtn = document.getElementById("submit-btn");
+        const resetBtn = document.getElementById("reset-btn");
         const hoverTooltip = document.getElementById("hover-tooltip");
 
         const captchaModal = document.getElementById("captcha-modal");
@@ -1557,6 +1561,56 @@
             alert("Thanks! You successfully gave a " + selectedRating +
                 "-star ride. The train will never forgive you.");
         });
+
+        function resetWidget() {
+            // rating + train
+            selectedRating = null;
+            selectedRatingEl.textContent = "None";
+            submitBtn.disabled = true;
+            teaseClickCount = 0;
+            currentOffsetX = 0;
+            trainEl.style.transform = "translate(0px, 0px) rotate(0deg)";
+            carriages.forEach(c => c.classList.remove("selected"));
+
+            // slider / gate
+            nnSlider.value = 20;
+            nnNiceReached = false;
+            trainUnlocked = false;
+            engineWarmed = false;
+            warmupClicks = 0;
+            puzzleSolved = false;
+            nnStatus.textContent = "Slide to “Nice” to unlock the train.";
+
+            // warmup modal
+            warmupStatus.textContent = "Click “Stoke the boiler” 5 times to build steam.";
+            hideWarmupModal();
+
+            // puzzle modal + tiles
+            puzzleStatus.textContent = "Turn every tile into a 🎄 to unlock the train.";
+            hidePuzzleModal();
+            const pattern = ["gift","tree","gift","tree","gift","tree","gift","tree","gift"];
+            puzzleTiles.forEach((tile, idx) => {
+                const state = pattern[idx] || "gift";
+                tile.dataset.state = state;
+                tile.textContent = state === "tree" ? "🎄" : "🎁";
+                if (state === "tree") tile.classList.add("on");
+                else tile.classList.remove("on");
+            });
+
+            // captcha
+            robotCheckbox.checked = false;
+            captchaSolved = false;
+            captchaTiles.forEach(t => t.classList.remove("selected"));
+            captchaMessage.textContent = "Tip: only click the presents, not the snowmen or trees.";
+            hideCaptcha();
+
+            // tooltip
+            hoverTooltip.classList.remove("visible");
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener("click", resetWidget);
+        }
     </script>
 </body>
 </html>
