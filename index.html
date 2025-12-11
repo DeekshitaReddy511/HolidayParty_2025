@@ -978,6 +978,13 @@
             font-size: 10px;
             box-shadow: none;
         }
+
+        /* === SUBMIT CONFIRM MODAL === */
+        .submit-message-extra {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1032,7 +1039,7 @@
     <div class="widget-root">
         <h1>Rate Your Holiday Ride</h1>
         <div class="subtitle">
-           If you have been NICE! then Move your mouse over the train and click a sleigh (1–5).<br />
+            Move your mouse over the train and click a sleigh (1–5).<br />
             The sky is calm. The train is not.
         </div>
 
@@ -1087,7 +1094,7 @@
                         <div class="sleigh-edge"></div>
                         <div class="sleigh-rail"></div>
                         <div class="gift gift1"></div>
-                        <div class="gift gift2"></div>
+                        <div the="gift gift2"></div>
                         <div class="gift gift3"></div>
                         <div class="fairy-lights"></div>
                     </div>
@@ -1130,9 +1137,10 @@
                 <strong id="selected-rating">None</strong> (out of 5)
             </div>
             <button id="submit-btn" disabled>Submit Rating</button>
-            <button id="reset-btn" style="background: linear-gradient(135deg,#dc3545,#ff6b6);">
+            <button id="reset-btn" style="background: linear-gradient(135deg,#dc3545,#ff6b6b);">
                 Reset
             </button>
+            <div id="submit-status" style="font-size:10px;color:#555;min-height:12px;text-align:center;"></div>
         </div>
 
         <div class="debug-note">
@@ -1215,6 +1223,21 @@
         </div>
     </div>
 
+    <!-- SUBMIT CONFIRM MODAL (no browser popups) -->
+    <div id="submit-modal" class="captcha-backdrop">
+        <div class="captcha-card">
+            <div class="captcha-title">Confirm your rating</div>
+            <div id="submit-modal-text" style="margin:6px 0 8px;"></div>
+            <div class="submit-message-extra">
+                Click Confirm to lock in this rating, or Cancel to change it.
+            </div>
+            <div class="captcha-actions" style="margin-top:8px;justify-content:flex-end;gap:4px;">
+                <button id="submit-cancel-btn" style="background:#dc3545;color:#fff;">Cancel</button>
+                <button id="submit-ok-btn" style="background:#28a745;color:#fff;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const trainEl = document.getElementById("train");
         const carriages = document.querySelectorAll(".carriage");
@@ -1222,6 +1245,7 @@
         const submitBtn = document.getElementById("submit-btn");
         const resetBtn = document.getElementById("reset-btn");
         const hoverTooltip = document.getElementById("hover-tooltip");
+        const submitStatusEl = document.getElementById("submit-status");
 
         const captchaModal = document.getElementById("captcha-modal");
         const robotCheckbox = document.getElementById("robot-checkbox");
@@ -1241,6 +1265,11 @@
         const nnSlider = document.getElementById("nn-slider");
         const nnStatus = document.getElementById("nn-status");
 
+        const submitModal = document.getElementById("submit-modal");
+        const submitModalText = document.getElementById("submit-modal-text");
+        const submitOkBtn = document.getElementById("submit-ok-btn");
+        const submitCancelBtn = document.getElementById("submit-cancel-btn");
+
         let selectedRating = null;
         let teaseClickCount = 0;
         let currentOffsetX = 0;
@@ -1254,11 +1283,11 @@
         let puzzleSolved = false;
 
         const commentsByRating = {
-            1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled. Please click 'OK' to begin the termination process for the train driver.",
-            2: "A 2 star review means we are performing 40% below goal. Our metrics team is spiraling. Is your personal satisfaction worth destroying the morale of an entire department? Rethink this immediately.",
-            3: "Ah, a 3. The mark of utter indifference. We will log this as 'Not Bad Enough to Fix.' Are you sure you don't have enough energy for just one more star? It requires minimal effort.",
-            4: "FOUR stars is only 96% satisfaction! That small gap suggests a lack of alignment with our core brand values. Please detail the exact coordinates of the missing star before we can accept this submission.",
-            5: "Perfect! Thank you. Now, to validate this 5-star rating, please complete a brief survey detailing 10 ways we can maintain this level of perfection forever. (This is mandatory, not optional.)"
+            1: "You've rated us a 1. An emergency meeting with the entire transit operations team has been scheduled.",
+            2: "A 2 star review means we are performing 40% below goal. Our metrics team is spiraling.",
+            3: "Ah, a 3. The mark of utter indifference. We will log this as 'Not Bad Enough to Fix.'",
+            4: "FOUR stars is only 96% satisfaction! That small gap suggests a lack of alignment with our core brand values.",
+            5: "Perfect! Thank you. To maintain this level, please remember to lower your expectations next time."
         };
 
         const hoverCommentsByRating = {
@@ -1333,6 +1362,16 @@
 
         function hidePuzzleModal() {
             puzzleModal.classList.remove("visible");
+        }
+
+        function showSubmitModal() {
+            if (!selectedRating) return;
+            submitModalText.textContent = commentsByRating[selectedRating] || "";
+            submitModal.classList.add("visible");
+        }
+
+        function hideSubmitModal() {
+            submitModal.classList.remove("visible");
         }
 
         function evaluateCaptcha() {
@@ -1540,26 +1579,28 @@
             });
         });
 
+        // Submit rating – all inline, no browser popups
         submitBtn.addEventListener("click", () => {
-            if (!selectedRating) {
-                alert("Please pick a rating first! The train needs to escape you 3 times before it cooperates 😈");
-                return;
-            }
+            if (!selectedRating) return;
 
+            // Ensure captcha done
             if (!captchaSolved) {
                 showCaptcha();
                 return;
             }
 
-            const message = commentsByRating[selectedRating];
-            const confirmed = confirm(
-                message + "\n\nClick OK to lock in this rating, or Cancel to reconsider your life choices."
-            );
+            // Show custom confirmation card
+            showSubmitModal();
+        });
 
-            if (!confirmed) return;
+        submitOkBtn.addEventListener("click", () => {
+            hideSubmitModal();
+            submitStatusEl.textContent = `Thanks! You submitted a ${selectedRating}-star holiday ride. The train will never forgive you.`;
+        });
 
-            alert("Thanks! You successfully gave a " + selectedRating +
-                "-star ride. The train will never forgive you.");
+        submitCancelBtn.addEventListener("click", () => {
+            hideSubmitModal();
+            submitStatusEl.textContent = "Rating not locked in. The train is suspicious of your hesitation.";
         });
 
         function resetWidget() {
@@ -1603,6 +1644,10 @@
             captchaTiles.forEach(t => t.classList.remove("selected"));
             captchaMessage.textContent = "Tip: only click the presents, not the snowmen or trees.";
             hideCaptcha();
+
+            // submit modal & status
+            hideSubmitModal();
+            submitStatusEl.textContent = "";
 
             // tooltip
             hoverTooltip.classList.remove("visible");
