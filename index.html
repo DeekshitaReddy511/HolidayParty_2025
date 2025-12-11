@@ -1364,11 +1364,17 @@
             puzzleModal.classList.remove("visible");
         }
 
-        function showSubmitModal() {
-            if (!selectedRating) return;
-            submitModalText.textContent = commentsByRating[selectedRating] || "";
-            submitModal.classList.add("visible");
-        }
+       function showSubmitModal() {
+           if (!selectedRating) return;
+
+           const confirmJoke = commentsByRating[selectedRating] || "Are you sure you want to do this to the train?";
+
+           submitModalText.textContent =
+               confirmJoke + "  Are you absolutely sure you want to submit this rating?";
+
+           submitModal.classList.add("visible");
+}
+
 
         function hideSubmitModal() {
             submitModal.classList.remove("visible");
@@ -1593,10 +1599,23 @@
             showSubmitModal();
         });
 
-        submitOkBtn.addEventListener("click", () => {
-            hideSubmitModal();
-            submitStatusEl.textContent = `Thanks! You submitted a ${selectedRating}-star holiday ride. The train will never forgive you.`;
-        });
+     submitOkBtn.addEventListener("click", () => {
+         hideSubmitModal();
+
+         const recordedJokes = {
+             1: "Rating recorded. HR has opened a case file labeled “Train vs. You.”",
+             2: "Rating recorded. The metrics team just sighed loudly in three different time zones.",
+             3: "Rating recorded. We’ve filed this under “emotionally neutral snow.”",
+             4: "Rating recorded. The conductor is now writing a 14-page retrospective about that missing star.",
+             5: "Rating recorded. Santa just added you to the “favorite passengers” list… with suspicious enthusiasm."
+    };
+
+    const recordedLine = recordedJokes[selectedRating] ||
+        "Rating recorded. The train is quietly processing its feelings.";
+
+    submitStatusEl.textContent = `Rating recorded: ${selectedRating}★. ${recordedLine}`;
+});
+
 
         submitCancelBtn.addEventListener("click", () => {
             hideSubmitModal();
